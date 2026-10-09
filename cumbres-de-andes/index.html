@@ -1,0 +1,879 @@
+<title>Los Andes — Práctica libre</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+  :root {
+    --bg:#F7F9FB; --surface:#FFFFFF; --border:#DDE4EE;
+    --fg:#2B3148; --fg-muted:#6B7A99;
+    --teal:#3A9DAA; --teal-dark:#2C7D8A;
+    --amber:#F5A64A; --amber-dark:#D4883A;
+    --navy:#3D4A6B;
+    --correct:#2E9E6B; --wrong:#D64545;
+    --radius:10px; --shadow:0 2px 12px rgba(61,74,107,.10);
+    color-scheme:light;
+  }
+  @media(prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#1A1F2E;--surface:#242B3D;--border:#3A4260;
+      --fg:#E8EDF8;--fg-muted:#8A97B8;--teal:#4CB8C6;--teal-dark:#3AA5B3;
+      --amber:#F5A64A;--amber-dark:#E09040;--navy:#8FA3CC;
+      --correct:#3EC47E;--wrong:#E05555;color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1A1F2E;--surface:#242B3D;--border:#3A4260;
+    --fg:#E8EDF8;--fg-muted:#8A97B8;--teal:#4CB8C6;--teal-dark:#3AA5B3;
+    --amber:#F5A64A;--amber-dark:#E09040;--navy:#8FA3CC;
+    --correct:#3EC47E;--wrong:#E05555;color-scheme:dark;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:'Nunito',sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;padding-block:0;min-height:100%}
+
+  /* Header */
+  .site-header{background:var(--surface);border-bottom:2px solid var(--teal);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:100;box-shadow:var(--shadow)}
+  .logo-wrap{display:flex;align-items:center;gap:12px}
+  .logo-wrap img{height:52px;width:auto}
+  .header-badge{background:var(--amber);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:20px}
+  .timer-box{display:flex;align-items:center;gap:8px;background:var(--teal);color:#fff;padding:8px 18px;border-radius:24px;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.05em;box-shadow:0 2px 8px rgba(58,157,170,.35)}
+
+  /* Hero */
+  .hero{text-align:center;padding:32px 24px 22px;max-width:760px;margin:0 auto}
+  .hero h1{font-family:'Lora',serif;font-size:clamp(22px,5vw,36px);font-weight:600;color:var(--navy);text-wrap:balance;line-height:1.25}
+  .hero .subtitle{margin-top:8px;color:var(--fg-muted);font-size:15px}
+  .level-chip{display:inline-block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;margin-top:8px;letter-spacing:.06em;text-transform:uppercase}
+
+  .main{max-width:760px;margin:0 auto;padding-bottom:60px}
+
+  /* Text card */
+  .text-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 26px 20px;box-shadow:var(--shadow);margin-bottom:22px}
+  .text-card h2{font-family:'Lora',serif;font-size:20px;color:var(--navy);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--amber)}
+  .text-card p{font-family:'Lora',serif;font-size:15.5px;line-height:1.85;color:var(--fg);margin-bottom:1em}
+  .text-note{font-size:12.5px;color:var(--fg-muted);font-style:italic;margin-top:10px}
+
+  /* Inline select inside text */
+  .inline-select{
+    display:inline-block;
+    border:none;
+    border-bottom:2.5px solid var(--teal);
+    border-radius:0;
+    background:transparent;
+    color:var(--teal);
+    font-family:'Lora',serif;
+    font-size:15px;
+    font-weight:700;
+    padding:1px 4px;
+    cursor:pointer;
+    outline:none;
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233A9DAA'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 2px center;
+    padding-right:16px;
+    transition:border-color .18s,color .18s;
+    vertical-align:baseline;
+  }
+  .inline-select:focus{border-bottom-color:var(--amber)}
+  .inline-select.correct{border-bottom-color:var(--correct)!important;color:var(--correct)!important}
+  .inline-select.wrong{border-bottom-color:var(--wrong)!important;color:var(--wrong)!important}
+  .inline-select option{color:var(--fg);background:var(--surface)}
+
+  /* Exercise section */
+  .ex-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow)}
+  .ex-section h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:3px}
+  .ex-section h4{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:12px;text-wrap:balance}
+
+  /* Multiple choice (ex3,6) */
+  .mc-item{margin-bottom:12px}
+  .mc-item .stem{font-size:14.5px;margin-bottom:5px;color:var(--fg)}
+  .mc-opts{display:flex;gap:8px;flex-wrap:wrap}
+  .mc-btn{padding:6px 14px;border-radius:8px;border:2px solid var(--border);background:var(--bg);color:var(--fg);font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .18s,background .18s,color .18s}
+  .mc-btn:hover{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 8%,var(--bg))}
+  .mc-btn.selected{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 14%,var(--bg))}
+
+  /* Fill-in blanks */
+  .fill-item{margin-bottom:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .fill-num{font-weight:800;color:var(--amber);min-width:18px}
+  .fill-input{border:2px solid var(--border);border-radius:8px;padding:5px 10px;font-family:'Nunito',sans-serif;font-size:14px;background:var(--bg);color:var(--fg);width:150px;transition:border-color .18s;outline:none}
+  .fill-input:focus{border-color:var(--teal)}
+  .fill-input.correct{border-color:var(--correct)}
+  .fill-input.wrong{border-color:var(--wrong)}
+  .fill-label{font-size:14px;color:var(--fg);flex:1;min-width:0}
+
+  /* Word bank */
+  .word-bank{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;padding:12px;border:2px dashed var(--border);border-radius:var(--radius);min-height:48px}
+  .word-chip{padding:5px 12px;background:var(--amber);color:#fff;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;user-select:none;transition:opacity .18s,transform .12s}
+  .word-chip:hover{opacity:.85;transform:scale(1.05)}
+  .word-chip.used{opacity:.3;pointer-events:none}
+  .sentence-slot{display:flex;align-items:center;gap:5px;margin-bottom:9px;font-size:14.5px;flex-wrap:wrap}
+  .slot-num{color:var(--amber);font-weight:800;min-width:18px}
+  .drop-slot{border-bottom:2px solid var(--teal);min-width:90px;padding:1px 5px;font-weight:700;color:var(--teal);cursor:pointer;display:inline-block;min-height:20px;transition:background .15s}
+  .drop-slot:hover{background:color-mix(in srgb,var(--teal) 10%,transparent);border-radius:4px}
+  .drop-slot.filled{border-color:var(--amber);color:var(--amber)}
+  .drop-slot.correct{border-color:var(--correct);color:var(--correct)}
+  .drop-slot.wrong{border-color:var(--wrong);color:var(--wrong)}
+
+  /* Match pairs — arrow connector */
+  .match-cols{display:grid;grid-template-columns:1fr 60px 1fr;align-items:stretch;gap:0;position:relative}
+  .match-col{display:flex;flex-direction:column;gap:10px}
+  .match-col.right{align-items:stretch}
+  .match-card{
+    padding:11px 16px;
+    border:2px solid var(--border);
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--fg);
+    background:var(--surface);
+    cursor:pointer;
+    transition:border-color .18s,background .18s,color .18s,transform .12s,box-shadow .18s;
+    text-align:center;
+    user-select:none;
+    min-height:46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 1px 4px rgba(61,74,107,.07);
+    position:relative;
+  }
+  .match-col.left .match-card{border-left:4px solid var(--teal);padding-left:13px}
+  .match-col.right .match-card{border-right:4px solid var(--amber);padding-right:13px}
+  .match-card:hover:not([data-locked]){
+    border-color:var(--teal);
+    background:color-mix(in srgb,var(--teal) 8%,var(--surface));
+    transform:translateY(-1px);
+    box-shadow:0 3px 10px rgba(58,157,170,.18);
+  }
+  .match-card.active{
+    border-color:var(--amber)!important;
+    background:color-mix(in srgb,var(--amber) 14%,var(--surface))!important;
+    color:var(--amber-dark)!important;
+    transform:scale(1.03);
+    box-shadow:0 3px 12px rgba(245,166,74,.25)!important;
+  }
+  .match-card.paired{
+    border-color:var(--teal)!important;
+    background:color-mix(in srgb,var(--teal) 10%,var(--surface))!important;
+    color:var(--teal-dark)!important;
+  }
+  .match-card.correct{
+    border-color:var(--correct)!important;
+    background:color-mix(in srgb,var(--correct) 12%,var(--surface))!important;
+    color:var(--correct)!important;
+    cursor:default;
+    box-shadow:0 2px 8px rgba(46,158,107,.18)!important;
+  }
+  .match-card.wrong{
+    border-color:var(--wrong)!important;
+    background:color-mix(in srgb,var(--wrong) 10%,var(--surface))!important;
+    color:var(--wrong)!important;
+    cursor:default;
+  }
+  .match-svg-col{position:relative;overflow:visible}
+  .match-svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .match-hint{text-align:center;font-size:12px;color:var(--fg-muted);margin-top:8px;font-style:italic}
+
+  /* V/F colored buttons */
+  .vf-btn-v{background:color-mix(in srgb,var(--correct) 15%,var(--bg));border-color:var(--correct);color:var(--correct)}
+  .vf-btn-v:hover{background:color-mix(in srgb,var(--correct) 25%,var(--bg))}
+  .vf-btn-v.selected{background:var(--correct);color:#fff;border-color:var(--correct)}
+  .vf-btn-f{background:color-mix(in srgb,var(--wrong) 12%,var(--bg));border-color:var(--wrong);color:var(--wrong)}
+  .vf-btn-f:hover{background:color-mix(in srgb,var(--wrong) 22%,var(--bg))}
+  .vf-btn-f.selected{background:var(--wrong);color:#fff;border-color:var(--wrong)}
+  .mc-btn.correct{border-color:var(--correct)!important;background:color-mix(in srgb,var(--correct) 20%,var(--bg))!important;color:var(--correct)!important}
+  .mc-btn.wrong{border-color:var(--wrong)!important;background:color-mix(in srgb,var(--wrong) 14%,var(--bg))!important;color:var(--wrong)!important}
+
+  /* Social icons */
+  .social-btn.tk{background:#000}
+  .social-btn.th{background:#000}
+  .social-btn.web2{background:var(--navy)}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+  .btn:active{transform:translateY(0)}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-amber{background:var(--amber);color:#fff}
+  .btn-outline{background:transparent;border:2px solid var(--teal);color:var(--teal)}
+  .btn-navy{background:var(--navy);color:#fff}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+  /* Results */
+  #results-panel{display:none;background:var(--surface);border:2px solid var(--teal);border-radius:14px;padding:28px 26px;margin-bottom:26px;box-shadow:0 4px 24px rgba(58,157,170,.2);text-align:center}
+  #results-panel h2{font-family:'Lora',serif;font-size:24px;color:var(--navy);margin-bottom:8px}
+  .score-big{font-size:52px;font-weight:800;color:var(--teal);line-height:1;margin:10px 0 5px}
+  .score-meta{color:var(--fg-muted);font-size:14px;margin-bottom:16px}
+  .score-bar-wrap{height:10px;background:var(--border);border-radius:5px;margin:0 auto 16px;max-width:300px}
+  .score-bar{height:100%;border-radius:5px;background:var(--teal);transition:width 1s cubic-bezier(.4,0,.2,1);width:0}
+  .feedback-msg{font-size:17px;font-weight:700;color:var(--amber);margin-bottom:18px}
+
+  /* School card */
+  .school-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px 22px;margin-bottom:22px;box-shadow:var(--shadow);text-align:center}
+  .school-card img{height:60px;width:auto;margin-bottom:10px}
+  .school-card h3{font-family:'Lora',serif;font-size:19px;color:var(--navy);margin-bottom:5px}
+  .school-card p{color:var(--fg-muted);font-size:14px;margin-bottom:18px}
+  .social-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+  .social-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .18s,transform .15s;color:#fff}
+  .social-btn:hover{opacity:.88;transform:translateY(-1px)}
+  .social-btn.web{background:var(--teal)}
+  .social-btn.ig{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+  .social-btn.yt{background:#FF0000}
+  .social-btn.tg{background:#229ED9}
+  .social-btn.wa{background:#25D366}
+  .social-btn.fb{background:#1877F2}
+  .social-btn.contact{background:var(--amber)}
+  .divider{height:1px;background:var(--border);margin:20px 0}
+  .promo-banner{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);color:#fff;border-radius:12px;padding:16px 20px;text-align:center;margin-bottom:18px;font-size:14px;line-height:1.5}
+  .promo-banner strong{display:block;font-size:16px;margin-bottom:3px}
+  .promo-banner a{color:#fff;font-weight:800;text-decoration:underline}
+
+  @media(max-width:500px){
+    .match-grid{grid-template-columns:1fr}
+    .site-header{padding:10px 14px}
+    .text-card,.ex-section{padding:16px 14px}
+    .score-big{font-size:40px}
+  }
+</style>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header class="site-header">
+  <div class="logo-wrap">
+    <img src="data:image/jpeg;base64,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" alt="AMO La escuela de español">
+    <div><div class="header-badge">Práctica gratuita · 15 min</div></div>
+  </div>
+  <div class="timer-box">⏱ <span id="timer">15:00</span></div>
+</header>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<div class="hero">
+  <h1>Cumbres más altas de los Andes</h1>
+  <p class="subtitle">Geografía · Naturaleza · Clima · 6 ejercicios</p>
+  <span class="level-chip">A2+</span>
+</div>
+
+<div class="main">
+
+<!-- ══════════════════ TEXTO CON SELECTS INLINE ══════════════════ -->
+<div class="text-card">
+  <h2>Lee el texto y elige la opción correcta</h2>
+  <p>La mayor cumbre de la cordillera de los Andes es el Aconcagua que, con 6962 metros
+  <strong>sobre el nivel del mar</strong>, es el segundo punto más alto del mundo después del
+  sistema de los Himalayas. Además, es la cumbre de mayor altitud
+  <select class="inline-select" data-ans="de" id="g1">
+    <option value="">…</option>
+    <option>de</option><option>por</option><option>sobre</option>
+  </select>
+  los hemisferios sur y occidental.
+  Se <select class="inline-select" data-ans="ubica" id="g2">
+    <option value="">…</option>
+    <option>está</option><option>ubica</option><option>tiene</option>
+  </select> en la provincia de Mendoza, Argentina.</p>
+
+  <p>Argentina y Chile <select class="inline-select" data-ans="comparten" id="g3">
+    <option value="">…</option>
+    <option>parten</option><option>comparten</option><option>llegan</option>
+  </select> los picos más altos
+  de los Andes. Entre ellos se encuentra el Nevado Ojos del Salado, el volcán activo más alto del
+  mundo y la segunda cumbre más alta del <select class="inline-select" data-ans="continente" id="g4">
+    <option value="">…</option>
+    <option>continente</option><option>continental</option><option>contenido</option>
+  </select>.
+  De los diez volcanes más altos del planeta, seis <select class="inline-select" data-ans="son" id="g5">
+    <option value="">…</option>
+    <option>son</option><option>hacen</option><option>están</option>
+  </select>
+  compartidos entre Argentina y Chile, tres en Argentina y uno en Bolivia.</p>
+
+  <p><select class="inline-select" data-ans="Estas" id="g6">
+    <option value="">…</option>
+    <option>Estas</option><option>Estos</option><option>Estes</option>
+  </select> cumbres son seguidas por la cordillera
+  Blanca, ubicada en el Perú, la cordillera Real de Bolivia y los Andes ecuatorianos.
+  La región andina tiene uno de los climas más variados del planeta: desde zonas
+  áridas y <strong>semiáridas</strong> en el norte de Chile hasta regiones
+  <strong>húmedas y frías</strong> en la Patagonia.</p>
+
+  <p>En el sur de Perú, cerca del Cuzco, se <select class="inline-select" data-ans="encuentra" id="g7">
+    <option value="">…</option>
+    <option>encuentra</option><option>pasa</option><option>está</option>
+  </select>
+  la cordillera de Vilcanota, donde está ubicado el glaciar Quelccaya, el glaciar tropical
+  más extenso de <select class="inline-select" data-ans="toda" id="g8">
+    <option value="">…</option>
+    <option>toda</option><option>entera</option><option>completa</option>
+  </select> la zona intertropical
+  del mundo. Los científicos advierten que este glaciar ha <strong>retrocedido</strong>
+  significativamente en los últimos 50 años debido al <em>cambio climático</em>.</p>
+
+  <p class="text-note">▲ Haz clic en cada recuadro azul y elige la opción correcta.</p>
+</div>
+
+<!-- ══════════════════ EX 2: Distribuye las palabras ══════════════════ -->
+<div class="ex-section" id="ex2">
+  <h3>Ejercicio 2 · 10 puntos</h3>
+  <h4>Haz clic en una palabra y luego en el espacio donde debe ir.</h4>
+
+  <div class="word-bank" id="word-bank">
+    <span class="word-chip" data-word="árido">árido</span>
+    <span class="word-chip" data-word="glaciar">glaciar</span>
+    <span class="word-chip" data-word="cordillera">cordillera</span>
+    <span class="word-chip" data-word="clima">clima</span>
+    <span class="word-chip" data-word="cumbre">cumbre</span>
+    <span class="word-chip" data-word="volcán">volcán</span>
+    <span class="word-chip" data-word="altitud">altitud</span>
+    <span class="word-chip" data-word="nivel del mar">nivel del mar</span>
+    <span class="word-chip" data-word="húmedo">húmedo</span>
+    <span class="word-chip" data-word="retroceder">retroceder</span>
+  </div>
+
+  <div class="sentence-slot"><span class="slot-num">1.</span><span>El Aconcagua está a 6962 metros sobre el</span><span class="drop-slot" data-ans="nivel del mar" id="slot1">___</span><span>.</span></div>
+  <div class="sentence-slot"><span class="slot-num">2.</span><span>El Nevado Ojos del Salado es el</span><span class="drop-slot" data-ans="volcán" id="slot2">___</span><span>activo más alto del mundo.</span></div>
+  <div class="sentence-slot"><span class="slot-num">3.</span><span>El Quelccaya es el</span><span class="drop-slot" data-ans="glaciar" id="slot3">___</span><span>tropical más extenso.</span></div>
+  <div class="sentence-slot"><span class="slot-num">4.</span><span>Los científicos dicen que este glaciar ha empezado a</span><span class="drop-slot" data-ans="retroceder" id="slot4">___</span><span>.</span></div>
+  <div class="sentence-slot"><span class="slot-num">5.</span><span>La región andina tiene un</span><span class="drop-slot" data-ans="clima" id="slot5">___</span><span>muy variado.</span></div>
+  <div class="sentence-slot"><span class="slot-num">6.</span><span>El norte de Chile tiene zonas</span><span class="drop-slot" data-ans="árido" id="slot6">___</span><span>s y semiáridas.</span></div>
+  <div class="sentence-slot"><span class="slot-num">7.</span><span>La Patagonia tiene regiones</span><span class="drop-slot" data-ans="húmedo" id="slot7">___</span><span>s y frías.</span></div>
+  <div class="sentence-slot"><span class="slot-num">8.</span><span>La</span><span class="drop-slot" data-ans="cumbre" id="slot8">___</span><span>más alta de América es el Aconcagua.</span></div>
+  <div class="sentence-slot"><span class="slot-num">9.</span><span>Los Andes son una</span><span class="drop-slot" data-ans="cordillera" id="slot9">___</span><span>muy larga.</span></div>
+  <div class="sentence-slot"><span class="slot-num">10.</span><span>El Aconcagua tiene una gran</span><span class="drop-slot" data-ans="altitud" id="slot10">___</span><span>.</span></div>
+</div>
+
+<!-- ══════════════════ EX 3: Elige la mejor de 3 ══════════════════ -->
+<div class="ex-section" id="ex3">
+  <h3>Ejercicio 3 · 6 puntos</h3>
+  <h4>Elige la palabra que mejor completa cada frase.</h4>
+
+  <div class="mc-item" data-q="e3-1" data-answer="B">
+    <div class="stem"><strong>1.</strong> El Aconcagua es la montaña más ___ de América.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) larga</button>
+      <button class="mc-btn" data-opt="B">B) alta</button>
+      <button class="mc-btn" data-opt="C">C) grande</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="e3-2" data-answer="A">
+    <div class="stem"><strong>2.</strong> El glaciar Quelccaya ___ a causa del calentamiento global.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) retrocede</button>
+      <button class="mc-btn" data-opt="B">B) avanza</button>
+      <button class="mc-btn" data-opt="C">C) crece</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="e3-3" data-answer="C">
+    <div class="stem"><strong>3.</strong> Los Andes se ___ por varios países de América del Sur.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) corren</button>
+      <button class="mc-btn" data-opt="B">B) mueven</button>
+      <button class="mc-btn" data-opt="C">C) extienden</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="e3-4" data-answer="B">
+    <div class="stem"><strong>4.</strong> La zona árida tiene muy poca ___.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) temperatura</button>
+      <button class="mc-btn" data-opt="B">B) lluvia</button>
+      <button class="mc-btn" data-opt="C">C) nieve</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="e3-5" data-answer="A">
+    <div class="stem"><strong>5.</strong> El ___ climático afecta a todos los glaciares del mundo.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) cambio</button>
+      <button class="mc-btn" data-opt="B">B) tiempo</button>
+      <button class="mc-btn" data-opt="C">C) estado</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="e3-6" data-answer="C">
+    <div class="stem"><strong>6.</strong> Los volcanes ___ son los más peligrosos.</div>
+    <div class="mc-opts">
+      <button class="mc-btn" data-opt="A">A) dormidos</button>
+      <button class="mc-btn" data-opt="B">B) extintos</button>
+      <button class="mc-btn" data-opt="C">C) activos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ EX 4: Antónimos ══════════════════ -->
+<div class="ex-section" id="ex4">
+  <h3>Ejercicio 4 · 6 puntos</h3>
+  <h4>Une cada palabra con su antónimo.</h4>
+  <div class="match-cols" id="ant-cols">
+    <div class="match-col left" id="ant-left">
+      <div class="match-card" data-side="left" data-word="árido" data-ans="húmedo">árido</div>
+      <div class="match-card" data-side="left" data-word="alto" data-ans="bajo">alto</div>
+      <div class="match-card" data-side="left" data-word="caliente" data-ans="frío">caliente</div>
+      <div class="match-card" data-side="left" data-word="avanzar" data-ans="retroceder">avanzar</div>
+      <div class="match-card" data-side="left" data-word="extinto" data-ans="activo">extinto</div>
+      <div class="match-card" data-side="left" data-word="pequeño" data-ans="extenso">pequeño</div>
+    </div>
+    <div class="match-svg-col">
+      <svg class="match-svg" id="ant-svg"></svg>
+    </div>
+    <div class="match-col right" id="ant-right">
+      <div class="match-card" data-side="right" data-word="húmedo">húmedo</div>
+      <div class="match-card" data-side="right" data-word="extenso">extenso</div>
+      <div class="match-card" data-side="right" data-word="bajo">bajo</div>
+      <div class="match-card" data-side="right" data-word="activo">activo</div>
+      <div class="match-card" data-side="right" data-word="retroceder">retroceder</div>
+      <div class="match-card" data-side="right" data-word="frío">frío</div>
+    </div>
+  </div>
+  <p class="match-hint">👆 Haz clic en una palabra de la izquierda y luego en su contrario a la derecha</p>
+</div>
+
+<!-- ══════════════════ EX 5: Sinónimos ══════════════════ -->
+<div class="ex-section" id="ex5">
+  <h3>Ejercicio 5 · 6 puntos</h3>
+  <h4>Une cada palabra con su sinónimo.</h4>
+  <div class="match-cols" id="sin-cols">
+    <div class="match-col left" id="sin-left">
+      <div class="match-card" data-side="left" data-word="cumbre" data-ans="cima">cumbre</div>
+      <div class="match-card" data-side="left" data-word="ubicarse" data-ans="encontrarse">ubicarse</div>
+      <div class="match-card" data-side="left" data-word="extenso" data-ans="amplio">extenso</div>
+      <div class="match-card" data-side="left" data-word="advierte" data-ans="alerta">advierte</div>
+      <div class="match-card" data-side="left" data-word="significativamente" data-ans="considerablemente">significativamente</div>
+      <div class="match-card" data-side="left" data-word="región" data-ans="zona">región</div>
+    </div>
+    <div class="match-svg-col">
+      <svg class="match-svg" id="sin-svg"></svg>
+    </div>
+    <div class="match-col right" id="sin-right">
+      <div class="match-card" data-side="right" data-word="cima">cima</div>
+      <div class="match-card" data-side="right" data-word="amplio">amplio</div>
+      <div class="match-card" data-side="right" data-word="zona">zona</div>
+      <div class="match-card" data-side="right" data-word="alerta">alerta</div>
+      <div class="match-card" data-side="right" data-word="encontrarse">encontrarse</div>
+      <div class="match-card" data-side="right" data-word="considerablemente">considerablemente</div>
+    </div>
+  </div>
+  <p class="match-hint">👆 Haz clic en una palabra de la izquierda y luego en su equivalente a la derecha</p>
+</div>
+
+<!-- ══════════════════ EX 6: Verdadero / Falso ══════════════════ -->
+<div class="ex-section" id="ex6">
+  <h3>Ejercicio 6 · 6 puntos</h3>
+  <h4>¿Verdadero (V) o Falso (F)?</h4>
+
+  <div class="mc-item" data-q="vf1" data-answer="F">
+    <div class="stem"><strong>1.</strong> El Aconcagua es la montaña más alta del mundo.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="vf2" data-answer="V">
+    <div class="stem"><strong>2.</strong> Argentina y Chile comparten varios de los picos más altos de los Andes.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="vf3" data-answer="F">
+    <div class="stem"><strong>3.</strong> El glaciar Quelccaya está en Bolivia.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="vf4" data-answer="F">
+    <div class="stem"><strong>4.</strong> El clima andino es igual en todas las regiones.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="vf5" data-answer="V">
+    <div class="stem"><strong>5.</strong> El Nevado Ojos del Salado es un volcán activo.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+  <div class="mc-item" data-q="vf6" data-answer="V">
+    <div class="stem"><strong>6.</strong> El cambio climático afecta al glaciar Quelccaya.</div>
+    <div class="mc-opts">
+      <button class="mc-btn vf-btn-v" data-opt="V">✓ Verdadero</button>
+      <button class="mc-btn vf-btn-f" data-opt="F">✗ Falso</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ EX 7: Escribe ══════════════════ -->
+<div class="ex-section" id="ex7">
+  <h3>Ejercicio 7 · 8 puntos</h3>
+  <h4>Escribe la palabra correcta.</h4>
+  <div class="fill-item"><span class="fill-num">1.</span><input class="fill-input" data-ans="altitud" placeholder="…" id="w1"><span class="fill-label">La ___ del Aconcagua es de 6962 metros.</span></div>
+  <div class="fill-item"><span class="fill-num">2.</span><input class="fill-input" data-ans="glaciar" placeholder="…" id="w2"><span class="fill-label">El ___ Quelccaya está en peligro.</span></div>
+  <div class="fill-item"><span class="fill-num">3.</span><input class="fill-input" data-ans="volcán" placeholder="…" id="w3"><span class="fill-label">El Ojos del Salado es el ___ activo más alto.</span></div>
+  <div class="fill-item"><span class="fill-num">4.</span><input class="fill-input" data-ans="cordillera" placeholder="…" id="w4"><span class="fill-label">Los Andes son una ___ muy larga.</span></div>
+  <div class="fill-item"><span class="fill-num">5.</span><input class="fill-input" data-ans="tropical" placeholder="…" id="w5"><span class="fill-label">El clima ___ es cálido y húmedo.</span></div>
+  <div class="fill-item"><span class="fill-num">6.</span><input class="fill-input" data-ans="árida" placeholder="…" id="w6"><span class="fill-label">En el norte de Chile la zona es muy ___.</span></div>
+  <div class="fill-item"><span class="fill-num">7.</span><input class="fill-input" data-ans="cambio climático" placeholder="…" id="w7"><span class="fill-label">El ___ ___ derrite los glaciares.</span></div>
+  <div class="fill-item"><span class="fill-num">8.</span><input class="fill-input" data-ans="nivel del mar" placeholder="…" id="w8"><span class="fill-label">La montaña está sobre el ___ ___ ___.</span></div>
+</div>
+
+<!-- ══════════════════ ACTIONS ══════════════════ -->
+<div class="actions">
+  <button class="btn btn-primary" id="btn-check">✓ Ver mis resultados</button>
+  <button class="btn btn-outline" id="btn-restart" style="display:none">↺ Intentar de nuevo</button>
+</div>
+
+<!-- ══════════════════ RESULTS ══════════════════ -->
+<div id="results-panel">
+  <h2>🎉 ¡Resultados!</h2>
+  <div class="score-big" id="score-num">—</div>
+  <div class="score-meta" id="score-meta">de 44 puntos</div>
+  <div class="score-bar-wrap"><div class="score-bar" id="score-bar"></div></div>
+  <div class="feedback-msg" id="feedback-msg"></div>
+  <p style="color:var(--fg-muted);font-size:13px" id="time-used"></p>
+  <div class="actions" style="justify-content:center;margin-top:14px">
+    <button class="btn btn-amber" id="btn-restart2">↺ Intentar de nuevo</button>
+    <a class="btn btn-navy" href="https://www.amo-la-escuela.com/carta" target="_blank">📚 Más sobre AMO</a>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════════ SCHOOL CARD ══════════════════ -->
+<div class="school-card">
+  <img src="data:image/jpeg;base64,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" alt="AMO La escuela de español">
+  <h3>¿Te gustó esta práctica gratuita? 🦜</h3>
+  <p>En <strong>AMO — La escuela de español</strong> tienes clases en vivo, materiales exclusivos y una comunidad de estudiantes de todo el mundo.</p>
+  <div class="social-row">
+    <a class="social-btn web2" href="https://www.amo-la-escuela.com" target="_blank">🌐 Sitio web</a>
+    <a class="social-btn ig" href="https://www.instagram.com/amo.la.escuela" target="_blank">📸 Instagram</a>
+    <a class="social-btn yt" href="https://www.youtube.com/@AMO-laescuela" target="_blank">▶ YouTube</a>
+    <a class="social-btn tk" href="https://www.tiktok.com/@amo.la.escuela?_t=ZM-8ulYNNMW2Ja&_r=1" target="_blank">🎵 TikTok</a>
+    <a class="social-btn th" href="https://www.threads.com/@amo.la.escuela" target="_blank">🧵 Threads</a>
+  </div>
+  <div class="divider"></div>
+  <a class="social-btn contact" href="https://www.amo-la-escuela.com/carta" target="_blank" style="margin:0 auto;display:inline-flex">
+    ✉ ¿Preguntas o problemas? Escríbenos
+  </a>
+</div>
+
+<div class="promo-banner">
+  <strong>¡Practica español gratis, 15 minutos al día!</strong>
+  Comparte esta página con tus amigos que también aprenden español. 🌍
+  <br><a href="https://www.amo-la-escuela.com/carta" target="_blank">→ Ver más prácticas gratuitas de AMO</a>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ══ TIMER ══ */
+const TOTAL = 15*60;
+let startTime = Date.now(), timerDone = false;
+const timerEl = document.getElementById('timer');
+function tick(){
+  if(timerDone) return;
+  const rem = Math.max(0, TOTAL - Math.floor((Date.now()-startTime)/1000));
+  timerEl.textContent = String(Math.floor(rem/60)).padStart(2,'0')+':'+String(rem%60).padStart(2,'0');
+  if(rem===0){ timerEl.parentElement.style.background='#D64545'; timerDone=true; }
+}
+tick(); setInterval(tick,1000);
+
+/* ══ INLINE SELECTS ══ */
+// just track changes; scoring done in checkAll
+
+/* ══ MC BUTTONS (ex3 + ex6 V/F) ══ */
+document.querySelectorAll('.mc-item').forEach(item=>{
+  item.querySelectorAll('.mc-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(item.dataset.locked) return;
+      item.querySelectorAll('.mc-btn').forEach(b=>{
+        b.classList.remove('selected');
+        // restore base vf color classes
+        if(b.classList.contains('vf-btn-v')) b.classList.remove('selected');
+        if(b.classList.contains('vf-btn-f')) b.classList.remove('selected');
+      });
+      btn.classList.add('selected');
+      item.dataset.chosen = btn.dataset.opt;
+    });
+  });
+});
+
+/* ══ ARROW CONNECTOR (ex4 antónimos, ex5 sinónimos) ══ */
+function initMatchGame(colsId, svgId){
+  const cols = document.getElementById(colsId);
+  const svg = document.getElementById(svgId);
+  const leftCards = cols.querySelectorAll('.match-col.left .match-card');
+  const rightCards = cols.querySelectorAll('.match-col.right .match-card');
+  // pairs[leftWord] = rightWord
+  const pairs = {};
+  let activeLeft = null;
+
+  function getCardCenter(card, svgEl){
+    const cr = card.getBoundingClientRect();
+    const sr = svgEl.getBoundingClientRect();
+    return {
+      x: cr.left + cr.width/2 - sr.left,
+      y: cr.top + cr.height/2 - sr.top
+    };
+  }
+
+  function drawArrows(){
+    svg.setAttribute('viewBox','0 0 '+cols.offsetWidth+' '+cols.offsetHeight);
+    svg.style.width = cols.offsetWidth+'px';
+    svg.style.height = cols.offsetHeight+'px';
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // shared defs block
+    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    svg.appendChild(defs);
+
+    for(const [lw, rw] of Object.entries(pairs)){
+      const lCard = [...leftCards].find(c=>c.dataset.word===lw);
+      const rCard = [...rightCards].find(c=>c.dataset.word===rw);
+      if(!lCard||!rCard) continue;
+
+      // anchor on the right edge of left card, left edge of right card
+      const lcr = lCard.getBoundingClientRect();
+      const rcr = rCard.getBoundingClientRect();
+      const sr  = svg.getBoundingClientRect();
+      const lPos = { x: lcr.right - sr.left,       y: lcr.top + lcr.height/2 - sr.top };
+      const rPos = { x: rcr.left  - sr.left,        y: rcr.top + rcr.height/2 - sr.top };
+
+      const isChecked = lCard.classList.contains('correct') || lCard.classList.contains('wrong');
+      const isCorrect = lCard.classList.contains('correct');
+      const color = isChecked ? (isCorrect ? 'var(--correct)' : 'var(--wrong)') : 'var(--teal)';
+
+      // marker
+      const markerId = svgId+'-m-'+lw.replace(/\W/g,'_');
+      const marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+      marker.setAttribute('id', markerId);
+      marker.setAttribute('markerWidth','10'); marker.setAttribute('markerHeight','7');
+      marker.setAttribute('refX','9'); marker.setAttribute('refY','3.5');
+      marker.setAttribute('orient','auto');
+      const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points','0 0, 10 3.5, 0 7');
+      poly.setAttribute('fill', color);
+      marker.appendChild(poly);
+      defs.appendChild(marker);
+
+      // curved path
+      const cx1 = lPos.x + (rPos.x - lPos.x) * 0.4;
+      const cx2 = lPos.x + (rPos.x - lPos.x) * 0.6;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', `M${lPos.x},${lPos.y} C${cx1},${lPos.y} ${cx2},${rPos.y} ${rPos.x},${rPos.y}`);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', isChecked ? '3' : '2.5');
+      path.setAttribute('stroke-dasharray', isChecked ? '0' : '6,4');
+      path.setAttribute('stroke-linecap','round');
+      path.setAttribute('marker-end','url(#'+markerId+')');
+      if(!isChecked) path.setAttribute('opacity','0.85');
+      svg.appendChild(path);
+
+      // dot at start
+      const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx', lPos.x); dot.setAttribute('cy', lPos.y);
+      dot.setAttribute('r','4'); dot.setAttribute('fill', color);
+      svg.appendChild(dot);
+    }
+  }
+
+  function setPaired(lCard, rCard){
+    lCard.classList.add('paired'); rCard.classList.add('paired');
+  }
+  function clearPaired(lCard, rCard){
+    lCard.classList.remove('paired','active'); rCard.classList.remove('paired');
+  }
+
+  leftCards.forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(card.dataset.locked) return;
+      if(activeLeft===card){ activeLeft.classList.remove('active'); activeLeft=null; return; }
+      if(activeLeft) activeLeft.classList.remove('active');
+      activeLeft = card;
+      card.classList.add('active');
+    });
+  });
+
+  rightCards.forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(card.dataset.locked) return;
+      if(!activeLeft) return;
+      const lWord = activeLeft.dataset.word;
+      const rWord = card.dataset.word;
+      // remove any old pair for this left
+      if(pairs[lWord]){
+        const oldRight = [...rightCards].find(c=>c.dataset.word===pairs[lWord]);
+        if(oldRight) clearPaired(activeLeft, oldRight);
+      }
+      // remove any pair that had this right
+      for(const [k,v] of Object.entries(pairs)){
+        if(v===rWord){
+          const otherLeft = [...leftCards].find(c=>c.dataset.word===k);
+          if(otherLeft){ otherLeft.classList.remove('paired','active'); }
+          delete pairs[k];
+        }
+      }
+      pairs[lWord] = rWord;
+      setPaired(activeLeft, card);
+      activeLeft.classList.remove('active');
+      activeLeft = null;
+      drawArrows();
+    });
+  });
+
+  // Expose so checkAll can read
+  cols._pairs = pairs;
+  cols._leftCards = leftCards;
+  cols._rightCards = rightCards;
+  cols._drawArrows = drawArrows;
+  cols._locked = false;
+}
+
+initMatchGame('ant-cols','ant-svg');
+initMatchGame('sin-cols','sin-svg');
+
+// Redraw arrows on resize
+window.addEventListener('resize', ()=>{
+  document.getElementById('ant-cols')._drawArrows();
+  document.getElementById('sin-cols')._drawArrows();
+});
+
+/* ══ WORD BANK ══ */
+let selectedWord = null;
+document.querySelectorAll('.word-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    if(chip.classList.contains('used')) return;
+    document.querySelectorAll('.word-chip').forEach(c=>c.style.outline='');
+    if(selectedWord===chip.dataset.word){ selectedWord=null; chip.style.outline=''; }
+    else{ selectedWord=chip.dataset.word; chip.style.outline='3px solid var(--navy)'; }
+  });
+});
+document.querySelectorAll('.drop-slot').forEach(slot=>{
+  slot.addEventListener('click',()=>{
+    if(slot.dataset.locked) return;
+    if(slot.classList.contains('filled')&&!selectedWord){
+      const prev=slot.dataset.placed;
+      slot.textContent='___'; slot.classList.remove('filled'); slot.dataset.placed='';
+      document.querySelectorAll('.word-chip').forEach(c=>{ if(c.dataset.word===prev) c.classList.remove('used'); });
+      return;
+    }
+    if(!selectedWord) return;
+    const prev=slot.dataset.placed;
+    if(prev) document.querySelectorAll('.word-chip').forEach(c=>{ if(c.dataset.word===prev) c.classList.remove('used'); });
+    slot.textContent=selectedWord; slot.classList.add('filled'); slot.dataset.placed=selectedWord;
+    document.querySelectorAll('.word-chip').forEach(c=>{ if(c.dataset.word===selectedWord){ c.classList.add('used'); c.style.outline=''; } });
+    selectedWord=null;
+  });
+});
+
+/* ══ CHECK ALL ══ */
+const TOTAL_PTS = 44; // 8+10+6+6+6+8
+
+document.getElementById('btn-check').addEventListener('click', checkAll);
+document.getElementById('btn-restart').addEventListener('click', ()=>location.reload());
+document.getElementById('btn-restart2').addEventListener('click', ()=>location.reload());
+
+function checkAll(){
+  timerDone=true;
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  let pts=0;
+
+  // Inline selects (8 pts)
+  ['g1','g2','g3','g4','g5','g6','g7','g8'].forEach(id=>{
+    const sel=document.getElementById(id);
+    sel.disabled=true;
+    sel.classList.remove('correct','wrong');
+    if(sel.value===sel.dataset.ans){ sel.classList.add('correct'); pts++; }
+    else if(sel.value) sel.classList.add('wrong');
+  });
+
+  // Word bank (10 pts)
+  document.querySelectorAll('.drop-slot').forEach(slot=>{
+    slot.dataset.locked='1';
+    slot.classList.remove('filled','correct','wrong');
+    const placed=slot.dataset.placed||'';
+    if(placed===slot.dataset.ans){ slot.classList.add('correct'); pts++; }
+    else if(placed) slot.classList.add('wrong');
+  });
+
+  // Ex3 (6 pts)
+  document.querySelectorAll('#ex3 .mc-item').forEach(item=>{
+    const ans=item.dataset.answer, chosen=item.dataset.chosen||'';
+    item.dataset.locked='1';
+    item.querySelectorAll('.mc-btn').forEach(btn=>{
+      btn.classList.remove('selected','correct','wrong');
+      if(btn.dataset.opt===ans) btn.classList.add('correct');
+      else if(btn.dataset.opt===chosen&&chosen!==ans) btn.classList.add('wrong');
+    });
+    if(chosen===ans) pts++;
+  });
+
+  // Antónimos (6 pts)
+  (function(){
+    const cols = document.getElementById('ant-cols');
+    const pairs = cols._pairs || {};
+    cols._leftCards.forEach(lCard=>{
+      lCard.dataset.locked='1';
+      const chosen = pairs[lCard.dataset.word] || '';
+      lCard.classList.remove('paired','active','correct','wrong');
+      if(chosen===lCard.dataset.ans){ lCard.classList.add('correct'); pts++; }
+      else if(chosen) lCard.classList.add('wrong');
+      else lCard.classList.add('wrong');
+      const rCard = [...cols._rightCards].find(c=>c.dataset.word===chosen);
+      if(rCard){ rCard.dataset.locked='1'; rCard.classList.remove('paired'); }
+    });
+    cols._drawArrows();
+  })();
+
+  // Sinónimos (6 pts)
+  (function(){
+    const cols = document.getElementById('sin-cols');
+    const pairs = cols._pairs || {};
+    cols._leftCards.forEach(lCard=>{
+      lCard.dataset.locked='1';
+      const chosen = pairs[lCard.dataset.word] || '';
+      lCard.classList.remove('paired','active','correct','wrong');
+      if(chosen===lCard.dataset.ans){ lCard.classList.add('correct'); pts++; }
+      else if(chosen) lCard.classList.add('wrong');
+      else lCard.classList.add('wrong');
+      const rCard = [...cols._rightCards].find(c=>c.dataset.word===chosen);
+      if(rCard){ rCard.dataset.locked='1'; rCard.classList.remove('paired'); }
+    });
+    cols._drawArrows();
+  })();
+
+  // Ex6 VF (6 pts)
+  document.querySelectorAll('#ex6 .mc-item').forEach(item=>{
+    const ans=item.dataset.answer, chosen=item.dataset.chosen||'';
+    item.dataset.locked='1';
+    item.querySelectorAll('.mc-btn').forEach(btn=>{
+      btn.classList.remove('selected','correct','wrong');
+      if(btn.dataset.opt===ans) btn.classList.add('correct');
+      else if(btn.dataset.opt===chosen&&chosen!==ans) btn.classList.add('wrong');
+    });
+    if(chosen===ans) pts++;
+  });
+
+  // Ex7 fill (8 pts)
+  ['w1','w2','w3','w4','w5','w6','w7','w8'].forEach(id=>{
+    const inp=document.getElementById(id);
+    inp.readOnly=true;
+    inp.classList.remove('correct','wrong');
+    const ans=inp.dataset.ans.trim().toLowerCase();
+    const val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+    if(val===ans){ inp.classList.add('correct'); pts++; }
+    else if(val) inp.classList.add('wrong');
+  });
+
+  // Show results
+  const pct=Math.round(pts/TOTAL_PTS*100);
+  document.getElementById('score-num').textContent=pts+' / '+TOTAL_PTS;
+  document.getElementById('score-meta').textContent='puntos correctos de '+TOTAL_PTS;
+  setTimeout(()=>document.getElementById('score-bar').style.width=pct+'%',80);
+  const msgs=['¡No te rindas! Vuelve a intentarlo 🌟','¡Buen intento! Repasa el texto 📖','¡Muy bien! Sigue practicando 💪','¡Excelente! Eres un experto en geografía 🏔️'];
+  document.getElementById('feedback-msg').textContent=msgs[pct>=90?3:pct>=70?2:pct>=50?1:0];
+  document.getElementById('time-used').textContent='Tiempo usado: '+Math.floor(elapsed/60)+' min '+elapsed%60+' seg';
+
+  const panel=document.getElementById('results-panel');
+  panel.style.display='block';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('btn-check').style.display='none';
+  document.getElementById('btn-restart').style.display='inline-flex';
+}
+</script>
