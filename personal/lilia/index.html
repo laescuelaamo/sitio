@@ -76,6 +76,7 @@ header.top{display:flex;flex-direction:column;gap:10px}
 .bar{height:12px;border-radius:6px;background:var(--accent-soft);overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
 @media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+@media (max-width:480px){.summary{grid-template-columns:1fr;gap:10px}}
 .breakdown{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted);margin-top:8px}
 .breakdown b{color:var(--ink);font-variant-numeric:tabular-nums}
 
@@ -128,6 +129,29 @@ details.settings summary{cursor:pointer;font-weight:800}
 .pdfrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 #pdfMsg{font-size:.85rem;color:var(--muted)}
 
+.lessons{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.lesson{display:grid;grid-template-columns:26px 92px 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);border-left:4px solid var(--line);background:var(--sheet);border-radius:10px;padding:8px 10px}
+.lesson .ln{font-weight:800;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.lesson .lt{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.lesson .ls{display:flex;flex-direction:column;line-height:1.25}
+.lesson small,.ttday small{color:var(--muted);font-size:.78rem}
+.lesson .lc{font-size:.85rem;font-weight:800;color:var(--muted);display:flex;gap:6px;align-items:center;white-space:nowrap}
+.lesson.on{border-color:var(--good);border-left-color:var(--good);background:var(--good-soft)}
+.lesson.on .lc{color:var(--good)}
+.lesson.now{border-left-color:var(--accent)}
+.lesson.past:not(.on){opacity:.75}
+.nowpill{font-style:normal;background:var(--accent);color:var(--sheet);border-radius:999px;padding:1px 8px;font-size:.72rem}
+@media (max-width:480px){.lesson{grid-template-columns:22px 1fr auto}.lesson .lt{grid-column:2;grid-row:2;font-size:.78rem}.lesson .ls{grid-column:2;grid-row:1}.lesson .lc{grid-column:3;grid-row:1/3}}
+select{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--paper)}
+details.tt summary{cursor:pointer}
+.ttgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px}
+.ttday{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ttday.cur{border-color:var(--accent)}
+.ttday ol{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ttday li{display:grid;grid-template-columns:16px 40px 1fr;gap:6px;font-size:.88rem;line-height:1.25}
+.ttday li span:last-child{display:flex;flex-direction:column}
+.ttday .ln{font-weight:800;color:var(--muted)}
+.ttday .lt{color:var(--muted);font-variant-numeric:tabular-nums}
 /* Offscreen report used for PDF */
 #report{position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#1c2332;font-family:var(--font-body)}
 #report .blk{padding:18px 24px;background:#fff}
@@ -157,7 +181,17 @@ const DAY_SHORT=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 const DAY_LONG=["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
 const MONTHS=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 const MOODS=[["😞","плохо"],["😕","так себе"],["😐","нормально"],["🙂","хорошо"],["😄","супер"]];
-const DEFAULTS={name:"",wakeTime:"8:30",lessonsDefault:6,pLesson:10,pHomework:20,pWake:10,gradeGood:10,pGradeGood:15,gradeOk:7,pGradeOk:5,pHelp:30,target:600};
+const TIMES={0:["8:05","8:50"],1:["9:00","9:45"],2:["9:55","10:40"],3:["10:50","11:35"],4:["11:45","12:30"],5:["12:40","13:25"],6:["13:35","14:10"],7:["14:20","14:55"],8:["15:05","15:40"]};
+const SCHED=[
+ [[1,"Англійська мова","Дуріхіна"],[2,"Англійська мова","Дуріхіна"],[3,"Біологія","Дзюбенко"],[4,"Фізика","Борзенко"],[5,"Світова література","Осетинський"],[6,"Англійська мова","Дуріхіна"],[7,"Хімія","Дзюбенко"],[8,"Дод. математика","Таранська"]],
+ [[0,"Фізкультура","Грубник"],[1,"Англійська мова","Дуріхіна"],[2,"Географія","Райков"],[3,"Захист Вітчизни","Майборода"],[4,"Історія України","Ступак"],[5,"Українська мова","Максимова"],[6,"Українська література","Максимова"],[7,"Зарубіжна література","Донська"],[8,"Безпековий практикум","Дуріхіна"]],
+ [[1,"Всесвітня історія","Ступак"],[2,"Громадянська освіта","Майборода"],[3,"Громадянська освіта","Майборода"],[4,"Інформатика / Мистецтво","Бутенко / Івенська"],[5,"Інформатика","Бутенко"],[6,"Фізика","Борзенко"],[7,"Дод. математика","Таранська"]],
+ [[0,"Фізкультура","Грубник"],[1,"Алгебра","Таранська"],[2,"Географія","Райков"],[3,"Геометрія","Таранська"],[4,"Зарубіжна література","Донська"],[5,"Англійська мова","Дуріхіна"],[6,"Англійська мова","Дуріхіна"],[7,"Мистецтво","Івенська"],[8,"Дод. українська мова","Максимова"]],
+ [[1,"Фізика","Борзенко"],[2,"Світова література","Осетинський"],[3,"Українська мова","Максимова"],[4,"Українська література","Максимова"],[5,"Історія України","Ступак"],[6,"Алгебра","Таранська"],[7,"Алгебра","Таранська"]],
+ [],[]
+];
+const toMin=t=>{const [h,m]=t.split(":").map(Number);return h*60+m;};
+const DEFAULTS={name:"",wakeTime:"9:00",lessonsDefault:6,pLesson:8,pHomework:20,pWake:10,gradeGood:10,pGradeGood:15,gradeOk:7,pGradeOk:5,pHelp:30,target:600};
 
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pad=n=>String(n).padStart(2,"0");
@@ -182,13 +216,14 @@ let W=loadLocalWeek(weekKey);
 let cloud="local"; // local | cloud | loading | error
 let db=null, downloads=null, unsubWeek=null;
 
-function emptyDay(i){return {woke:false,planned:i<5?num(S.lessonsDefault,6):0,attended:0,hw:false,grades:[],tidy:false,help:[],mood:0,interesting:"",thoughts:""};}
-function emptyWeek(){return {days:[0,1,2,3,4,5,6].map(emptyDay),proud:"",hard:"",updatedAt:0};}
+function emptyDay(i){return {off:false,att:[],woke:false,planned:0,attended:0,hw:false,grades:[],tidy:false,help:[],mood:0,interesting:"",thoughts:""};}
+function emptyWeek(){const days=[0,1,2,3,4,5,6].map(emptyDay);days.forEach((d,i)=>derive(d,i));return {days,proud:"",hard:"",updatedAt:0};}
 function normWeek(w){const e=emptyWeek();if(!w||!Array.isArray(w.days))return e;
   e.days=e.days.map((d,i)=>Object.assign(d,w.days[i]||{}));
   ["proud","hard"].forEach(k=>e[k]=w[k]||"");e.updatedAt=num(w.updatedAt,0);
-  e.days.forEach(d=>{if(!Array.isArray(d.grades))d.grades=[];if(!Array.isArray(d.help))d.help=[];});
+  e.days.forEach((d,i)=>{if(!Array.isArray(d.grades))d.grades=[];if(!Array.isArray(d.help))d.help=[];if(!Array.isArray(d.att))d.att=[];derive(d,i);});
   return e;}
+function derive(d,i){d.planned=d.off?0:SCHED[i].filter(l=>l[0]>0).length;if(d.off)d.att=[];d.attended=d.att.length;}
 function loadLocalWeek(k){return normWeek(LS.get("cl:week:"+k));}
 
 /* ---------- money ---------- */
@@ -204,7 +239,7 @@ function dayParts(d){
   };}
 const sumParts=p=>p.lessons+p.hw+p.wake+p.grades+p.help;
 function weekParts(){const t={lessons:0,hw:0,wake:0,grades:0,help:0};W.days.forEach(d=>{const p=dayParts(d);for(const k in t)t[k]+=p[k];});return t;}
-function exampleWeek(){const L=num(S.lessonsDefault,6);return 5*L*S.pLesson+5*S.pHomework+5*S.pWake+4*S.pGradeGood+3*S.pHelp;}
+function exampleWeek(){const L=SCHED.reduce((a,x)=>a+x.filter(l=>l[0]>0).length,0);return L*S.pLesson+5*S.pHomework+5*S.pWake+4*S.pGradeGood+3*S.pHelp;}
 
 /* ---------- saving ---------- */
 let writeTimer=null, writing=false, writeAgain=false;
@@ -266,7 +301,7 @@ function render(){
   const app=document.getElementById("app");
   const act=document.activeElement;const actId=act&&act.id;let s0=null,s1=null;
   try{if(act&&"selectionStart" in act){s0=act.selectionStart;s1=act.selectionEnd;}}catch(e){}
-  app.innerHTML=headerHTML()+summaryHTML()+daysHTML()+dayHTML()+weekEndHTML()+settingsHTML();
+  app.innerHTML=headerHTML()+summaryHTML()+daysHTML()+dayHTML()+weekEndHTML()+timetableHTML()+settingsHTML();
   if(actId){const el=document.getElementById(actId);if(el){el.focus();try{if(s0!=null)el.setSelectionRange(s0,s1);}catch(e){}}}
 }
 function headerHTML(){
@@ -317,17 +352,15 @@ function dayHTML(){
   return `<section class="sheet" aria-label="${DAY_LONG[i]}">
     <div class="dayhead"><h2>${DAY_LONG[i]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}</h2><div>За день: <span class="money" id="dtotal">${sumParts(p)} ₴</span></div></div>
     <div class="rows">
-      <div class="row"><div class="label"><b>Уроков по расписанию</b><span>${school?"поставь 0, если уроков нет":"выходной: уроков нет"}</span></div>
-        <div class="stepper"><button data-act="planned" data-d="-1" aria-label="Меньше">−</button><output>${d.planned}</output><button data-act="planned" data-d="1" aria-label="Больше">+</button></div></div>
-      ${school?`
-      <div class="row"><div class="label"><b>Была на уроках</b><span>${S.pLesson} ₴ за каждый урок</span></div>
-        <div class="stepper"><button data-act="attended" data-d="-1" aria-label="Меньше">−</button><output>${d.attended} / ${d.planned}</output><button data-act="attended" data-d="1" aria-label="Больше">+</button></div></div>
+      ${SCHED[i].length?`<div class="row"><div class="label"><b>Сегодня нет уроков</b><span>каникулы, болею, школа отменила</span></div>${chk("off",d.off,"нет уроков","Отметить")}</div>`:`<div class="row"><div class="label"><b>Выходной</b><span>уроков нет: можно выспаться, отметить помощь и написать в дневник</span></div><div></div></div>`}
+      ${school?`<div class="row"><div class="full label"><b>Уроки: нажми на урок, если была на нём</b><span>${S.pLesson} ₴ за урок · была на ${d.attended} из ${d.planned}${d.att.includes(0)?" + 0 урок":""}</span>
+        <div class="lessons">${lessonsHTML(i,d)}</div></div></div>
       <div class="row"><div class="label"><b>Домашка сделана</b><span>${S.pHomework} ₴ за день</span></div>${chk("hw",d.hw,"сделала","Отметить")}</div>
-      <div class="row"><div class="label"><b>Встала до ${esc(S.wakeTime)}</b><span>${S.pWake} ₴ в учебный день</span></div>${chk("woke",d.woke,"встала","Отметить")}</div>
+      <div class="row"><div class="label"><b>Встала до ${esc(S.wakeTime)}</b><span>${S.pWake} ₴ в учебный день, первый урок в 9:00</span></div>${chk("woke",d.woke,"встала","Отметить")}</div>
       `:""}
       <div class="row"><div class="label"><b>Убрала за собой</b><span>посуда, комната, вещи: это просто наш дом, без денег</span></div>${chk("tidy",d.tidy,"убрала","Отметить")}</div>
       <div class="row"><div class="full label"><b>Оценки сегодня</b><span>${S.gradeGood}–12: +${S.pGradeGood} ₴ · ${S.gradeOk}–${S.gradeGood-1}: +${S.pGradeOk} ₴ · ниже: без штрафа, просто записываем</span>
-        <div class="inline"><input type="text" id="gsubj" placeholder="Предмет (необязательно)" maxlength="30" value="${esc(window.__gsubj||"")}"></div>
+        <div class="inline"><select id="gsubj" aria-label="Предмет"><option value="">Предмет (необязательно)</option>${[...new Set((SCHED[i].length?SCHED[i]:SCHED.flat()).map(l=>l[1]))].map(x=>`<option ${window.__gsubj===x?"selected":""}>${esc(x)}</option>`).join("")}</select></div>
         <div class="grades">${gradeBtns}</div>
         ${gradeChips?`<div class="chips">${gradeChips}</div>`:""}
       </div></div>
@@ -344,6 +377,26 @@ function dayHTML(){
       <div class="note">Эти записи видит и папа.</div>
     </div>
   </section>`;
+}
+function lessonState(i,n){
+  const dt=addDays(parseYmd(weekKey),i);if(ymd(dt)!==ymd(new Date()))return "";
+  const now=new Date(),m=now.getHours()*60+now.getMinutes(),[a,b]=TIMES[n];
+  if(m>=toMin(a)&&m<toMin(b))return "now";if(m>=toMin(b))return "past";return "";}
+function lessonsHTML(i,d){
+  return SCHED[i].map(([n,subj,teach])=>{const on=d.att.includes(n),st=lessonState(i,n);
+    return `<button class="lesson ${on?"on":""} ${st}" data-act="lesson" data-n="${n}" aria-pressed="${on}">
+      <span class="ln">${n}</span>
+      <span class="lt">${TIMES[n][0]}–${TIMES[n][1]}</span>
+      <span class="ls"><b>${esc(subj)}</b><small>${esc(teach)}${n===0?" · 0 урок, бонус":""}</small></span>
+      <span class="lc">${st==="now"?'<em class="nowpill">сейчас</em>':""}${on?"✓ была":"была?"}</span>
+    </button>`;}).join("");
+}
+function timetableHTML(){
+  return `<section class="sheet"><details class="tt" ${window.__ttOpen?"open":""}>
+    <summary><h2 style="display:inline">Расписание 10-А</h2> <span class="muted small">все уроки онлайн · классный руководитель Дуріхіна В.В.</span></summary>
+    <div class="ttgrid">${[0,1,2,3,4].map(i=>`<div class="ttday ${i===(new Date().getDay()+6)%7?"cur":""}"><h3>${DAY_LONG[i]}</h3>
+      <ol>${SCHED[i].map(([n,subj,teach])=>`<li><span class="ln">${n}</span><span class="lt">${TIMES[n][0]}</span><span>${esc(subj)}<small>${esc(teach)}</small></span></li>`).join("")}</ol></div>`).join("")}</div>
+  </details></section>`;
 }
 function weekEndHTML(){
   const pdfReady=!!downloads;
@@ -362,14 +415,14 @@ function weekEndHTML(){
 function settingsHTML(){
   return `<section class="sheet"><h2>Как считаются деньги</h2>
     <ul class="rules">
-      <li>Урок, на котором была: ${S.pLesson} ₴</li>
+      <li>Урок, на котором была: ${S.pLesson} ₴ (фізкультура в 8:05 во вторник и четверг тоже считается, это бонус)</li>
       <li>Домашка за день: ${S.pHomework} ₴</li>
       <li>Встала до ${esc(S.wakeTime)} в учебный день (уроки с 9:00): ${S.pWake} ₴</li>
       <li>Оценка ${S.gradeGood}–12: +${S.pGradeGood} ₴, ${S.gradeOk}–${S.gradeGood-1}: +${S.pGradeOk} ₴, за низкие оценки штрафов нет</li>
       <li>Помогла сама, без просьбы: ${S.pHelp} ₴ за каждое дело</li>
       <li>Убрать за собой: обязательно, без денег</li>
     </ul>
-    <p class="muted small">Хорошая неделя (все уроки и домашки, каждый учебный день встала вовремя, 4 хорошие оценки, 3 дела без просьбы) = <span class="money">${exampleWeek()} ₴</span></p>
+    <p class="muted small">Хорошая неделя (все 38 уроков по 1–8 и все домашки, каждый учебный день встала вовремя, 4 хорошие оценки, 3 дела без просьбы) = <span class="money">${exampleWeek()} ₴</span></p>
     <p class="muted small">Всё сохраняется само после каждой отметки. Прошлые недели открываются стрелками вверху. PDF нужен только тогда, когда хочешь сохранить неделю файлом.</p>
   </section>`;
 }
@@ -399,8 +452,7 @@ document.addEventListener("click",e=>{
     case "thisweek":switchWeek(todayKey);return;
     case "day":selDay=Number(b.dataset.i);render();return;
     case "toggle":d[b.dataset.f]=!d[b.dataset.f];break;
-    case "planned":d.planned=Math.max(0,Math.min(12,d.planned+Number(b.dataset.d)));d.attended=Math.min(d.attended,d.planned);break;
-    case "attended":d.attended=Math.max(0,Math.min(d.planned,d.attended+Number(b.dataset.d)));break;
+    case "lesson":{const n=Number(b.dataset.n),k=d.att.indexOf(n);if(k>=0)d.att.splice(k,1);else d.att.push(n);d.att.sort((x,y)=>x-y);break;}
     case "grade":{const s=(document.getElementById("gsubj")||{}).value||"";d.grades.push({v:Number(b.dataset.v),s:s.trim()});window.__gsubj="";break;}
     case "delgrade":d.grades.splice(Number(b.dataset.k),1);break;
     case "delhelp":d.help.splice(Number(b.dataset.k),1);break;
@@ -408,8 +460,10 @@ document.addEventListener("click",e=>{
     case "pdf":makePdf(b);return;
     default:return;
   }
-  saveWeek();render();
+  derive(d,selDay);saveWeek();render();
 });
+document.addEventListener("toggle",e=>{if(e.target.classList&&e.target.classList.contains("tt"))window.__ttOpen=e.target.open;},true);
+setInterval(()=>{const a=document.activeElement;if(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))return;render();},60000);
 document.addEventListener("submit",e=>{
   const f=e.target.closest("[data-form=help]");if(!f)return;
   e.preventDefault();
