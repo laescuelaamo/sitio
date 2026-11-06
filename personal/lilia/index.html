@@ -69,6 +69,7 @@ header.top{display:flex;flex-direction:column;gap:10px}
 :root[data-theme="dark"] .btn.primary{color:#0f1422}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0f1422}}
 .btn.icon{width:40px;padding:8px 0;text-align:center}
+.themebtn{white-space:nowrap}
 .weeklabel{font-weight:800;min-width:150px;text-align:center}
 
 .summary{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
@@ -207,6 +208,13 @@ const num=(v,d)=>{const n=Number(v);return isFinite(n)?n:d;};
 const LS={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
           set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 
+/* ---------- theme (auto / light / dark) ---------- */
+const THEMES=["auto","light","dark"];
+const THEME_UI={auto:["🌓","Авто"],light:["☀️","День"],dark:["🌙","Ночь"]};
+let theme=LS.get("cl:theme");if(THEMES.indexOf(theme)<0)theme="auto";
+function applyTheme(){const r=document.documentElement;if(theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",theme);}
+applyTheme();
+
 /* ---------- state ---------- */
 const S=Object.assign({},DEFAULTS);
 const todayKey=ymd(mondayOf(new Date()));
@@ -309,7 +317,7 @@ function headerHTML(){
   return `<header class="top">
     <div class="top-row">
       <div><h1>Чек-лист недели</h1><div class="muted small">${nm} твоя неделя: отмечай каждый день, в воскресенье считаем вместе.</div></div>
-      <div class="status" id="status">${statusHTML()}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><button class="btn themebtn" data-act="theme" aria-label="Тема: ${THEME_UI[theme][1]}. Нажми, чтобы переключить" title="День / ночь / авто">${THEME_UI[theme][0]} ${THEME_UI[theme][1]}</button><div class="status" id="status">${statusHTML()}</div></div>
     </div>
     <div class="weeknav">
       <button class="btn icon" data-act="prevweek" aria-label="Предыдущая неделя">‹</button>
@@ -457,6 +465,7 @@ document.addEventListener("click",e=>{
     case "delgrade":d.grades.splice(Number(b.dataset.k),1);break;
     case "delhelp":d.help.splice(Number(b.dataset.k),1);break;
     case "mood":{const v=Number(b.dataset.v);d.mood=d.mood===v?0:v;break;}
+    case "theme":theme=THEMES[(THEMES.indexOf(theme)+1)%3];LS.set("cl:theme",theme);applyTheme();render();return;
     case "pdf":makePdf(b);return;
     default:return;
   }
