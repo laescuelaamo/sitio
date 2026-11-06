@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catálogo AMO — materiales</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --bg:#f6f5f1;--surface:#fff;--ink:#1d1d1b;--muted:#6b6a65;--line:#e4e2da;--accent:#c2410c;--accent-soft:#fff1e8;
+  --gram:#2563eb;--voc:#7c3aed;--lec:#0d9488;--cul:#b45309;--jue:#db2777;--tes:#4d7c0f;--lib:#9333ea;--dep:#0891b2;--otr:#64748b;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#141413;--surface:#1e1e1c;--ink:#f0eee8;--muted:#9a978e;--line:#33322e;--accent:#fb923c;--accent-soft:#2c1d12;
+  --shadow:0 1px 2px rgba(0,0,0,.4)}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 0 8px}
+h1{font-size:20px;margin:0;letter-spacing:-.01em}
+h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.search{flex:1;min-width:200px;position:relative}
+.search input{width:100%;padding:10px 12px 10px 36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.search svg{position:absolute;left:11px;top:11px;width:16px;height:16px;color:var(--muted)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:0 0 10px}
+.row .lbl{font-size:12px;color:var(--muted);margin-right:2px;text-transform:uppercase;letter-spacing:.05em}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:5px 11px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .n{opacity:.65;margin-left:4px;font-size:12px}
+.sep{width:1px;height:20px;background:var(--line);margin:0 6px}
+main{padding:18px 0 60px}
+.stats{color:var(--muted);font-size:13px;margin:0 0 14px}
+nav.jump{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+nav.jump a{font-size:13px;padding:4px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line)}
+nav.jump a:hover{border-color:var(--accent)}
+section.grp{margin-bottom:28px;scroll-margin-top:150px}
+.grp>h2{display:flex;align-items:baseline;gap:10px;font-size:17px;margin:0 0 10px;cursor:pointer;user-select:none}
+.grp>h2 .cnt{font-size:12px;color:var(--muted);font-weight:400}
+.grp>h2 .arrow{font-size:11px;color:var(--muted);transition:transform .15s}
+.grp.closed>h2 .arrow{transform:rotate(-90deg)}
+.grp.closed .grid{display:none}
+.sub{font-size:12px;color:var(--muted);font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.card{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c,var(--otr));border-radius:12px;padding:12px 12px 10px;box-shadow:var(--shadow);transition:transform .12s,border-color .12s}
+.card:hover{transform:translateY(-2px);border-color:var(--c)}
+.card .main{position:static}
+.card .main::after{content:"";position:absolute;inset:0;border-radius:12px}
+.card h3{margin:0;font-size:15px;line-height:1.3}
+.card p{margin:0;color:var(--muted);font-size:13px}
+.card p.pr{color:var(--ink);background:color-mix(in srgb,var(--c) 9%,transparent);border-radius:8px;padding:6px 8px}
+.card p.pr b{color:var(--c)}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.b{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.b.tipo{background:color-mix(in srgb,var(--c) 14%,transparent);border-color:transparent;color:var(--c);font-weight:600}
+.b.pub{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.b.warn{background:#fef3c7;color:#92400e;border-color:transparent}
+@media (prefers-color-scheme:dark){.b.warn{background:#3b2a07;color:#fcd34d}}
+.foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.foot a.gh{position:relative;z-index:2;padding:2px 6px;border-radius:6px}
+.foot a.gh:hover{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding:16px 0 40px}
+code{background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>Catálogo AMO <small>mis materiales</small></h1>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Buscar material… (pulsa / para enfocar)" autocomplete="off">
+      </div>
+    </div>
+    <div class="row" id="rowRepo"><span class="lbl">Almacén</span></div>
+    <div class="row" id="rowTipo"><span class="lbl">Tipo</span></div>
+    <div class="row" id="rowView"><span class="lbl">Ordenar</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="stats" id="stats"></p>
+  <nav class="jump" id="jump"></nav>
+  <div id="out"></div>
+</main>
+
+<footer class="wrap">
+  <p>Catálogo personal. Los enlaces apuntan a <code>laescuelaamo.github.io/estudiantes</code> y <code>laescuelaamo.github.io/sitio</code> (cámbialos en <code>BASE</code> si usas otro dominio). Para añadir un material nuevo, agrega una línea al arreglo <code>DATA</code> al final de este archivo.</p>
+</footer>
+
+<script>
+/* ===== Configuración ===== */
+const BASE = {
+  estudiantes: "https://laescuelaamo.github.io/estudiantes/",
+  sitio: "https://laescuelaamo.github.io/sitio/"     // contenido público
+};
+const GH = r => `https://github.com/laescuelaamo/${r}/tree/main/`;
+
+const TIPOS = {
+  gram:{n:"Gramática",c:"--gram"}, voc:{n:"Vocabulario",c:"--voc"}, lec:{n:"Lectura / ficha",c:"--lec"},
+  cul:{n:"Cultura",c:"--cul"}, jue:{n:"Juego / simulación",c:"--jue"}, tes:{n:"Test de nivel",c:"--tes"},
+  lib:{n:"Libro",c:"--lib"}, dep:{n:"Deporte",c:"--dep"}, otr:{n:"Otro",c:"--otr"}
+};
+const NIVELES = ["A1","A2","B1","B2","Libros","Sin nivel","Otros","Personal"];
+const NIVEL_NAME = {A1:"Nivel A1",A2:"Nivel A2",B1:"Nivel B1",B2:"Nivel B2",Libros:"Libros y lecturas graduadas","Sin nivel":"Sin nivel definido",Otros:"Otros materiales",Personal:"Personal (solo para mí)"};
+
+/* pr: qué se practica (gramática, tema, tiempo) · r: repo (e=estudiantes, s=sitio) · n: nivel (grupo) · l: etiqueta de nivel · t: tipo · title · d: descripción · p: ruta · kb: tamaño · x: nota */
+const E="estudiantes", S="sitio";
+const DATA = [
+/* ---------- estudiantes · A1 ---------- */
+{r:E,n:"A1",l:"A1+",t:"gram",title:"¿Cuándo? Expresiones de tiempo",d:"Ficha de expresiones temporales: ayer, hoy, mañana, por la mañana, a las…",p:"a1/expresiones-de-tiempo/",pr:"Expresiones de tiempo: meses, estaciones, días de la semana, fechas, partes del día y horas (en / este / el…)",kb:498},
+{r:E,n:"A1",l:"A1",t:"lec",title:"Tres personas, tres vidas — Javier (J)",d:"Ficha «blanco» con huecos de información; se completa en pareja con P y S.",p:"a1/3-personajes/Javier/",pr:"Presentarse y hablar de otros: ser, tener, vivir (presente), edad, familia y ciudad. Leer en voz alta y preguntar en pareja",kb:332,x:"Serie 3 personajes"},
+{r:E,n:"A1",l:"A1",t:"lec",title:"Tres personas, tres vidas — Patricia (P)",d:"Ficha «blanco» con huecos de información; se completa en pareja con J y S.",p:"a1/3-personajes/Patricia/",pr:"Presentarse y hablar de otros: ser, tener, vivir (presente), edad, familia y ciudad. Leer en voz alta y preguntar en pareja",kb:332,x:"Serie 3 personajes"},
+{r:E,n:"A1",l:"A1",t:"lec",title:"Tres personas, tres vidas — Sergio (S)",d:"Ficha «blanco» con huecos de información; se completa en pareja con J y P.",p:"a1/3-personajes/Sergio/",pr:"Presentarse y hablar de otros: ser, tener, vivir (presente), edad, familia y ciudad. Leer en voz alta y preguntar en pareja",kb:332,x:"Serie 3 personajes"},
+{r:E,n:"A1",l:"A1",t:"voc",title:"Vivienda y muebles — Blanco A",d:"Vocabulario de la casa y los muebles. Actividad de información cruzada (alumno A).",p:"a1/muebles-apartamento/a/",pr:"Vocabulario de la casa y los muebles; describir un piso (hay / tiene). Contar el anuncio y rellenar con lo que cuenta B",kb:316,x:"Serie vivienda"},
+{r:E,n:"A1",l:"A1",t:"voc",title:"Vivienda y muebles — Blanco B",d:"Vocabulario de la casa y los muebles. Actividad de información cruzada (alumno B).",p:"a1/muebles-apartamento/b/",pr:"Vocabulario de la casa y los muebles; describir un apartamento (hay / tiene). Contar el anuncio y rellenar con lo que cuenta A",kb:316,x:"Serie vivienda"},
+
+/* ---------- estudiantes · A2 ---------- */
+{r:E,n:"A2",l:"A1–A2",t:"lec",title:"Un día de mala suerte",d:"Historia de un día en que todo sale mal, con ejercicios de comprensión y pasados.",p:"A2/mala-suerte/",pr:"Comprensión lectora, ordenar la historia, causa y consecuencia, y conectores; texto narrado en pasado",kb:508},
+{r:E,n:"A2",l:"A1–A2",t:"voc",title:"Viajes y ciudades",d:"Práctica de vocabulario de viajes y ciudades.",p:"A2/viajes_y_ciudades/",pr:"Pretérito perfecto vs. imperfecto: verdad/mentira, elegir y conjugar (el viaje de Ana a Roma)",kb:34},
+{r:E,n:"A2",l:"A2",t:"lec",title:"Cuatro historias",d:"Cuatro textos cortos con actividades de lectura.",p:"A2/cuatro-historias/",pr:"Repaso completo de los tiempos del pasado en 4 textos · 46 preguntas",kb:326},
+{r:E,n:"A2",l:"A2",t:"gram",title:"Dos hermanas muy diferentes",d:"Los comparativos: más/menos… que, tan… como, mejor/peor.",p:"A2/dos-hermanas-comparativos.html/",pr:"Comparativos y superlativos: tan… como, más/menos… que, igual de, el más… · 32 preguntas",kb:600,x:"La carpeta se llama «dos-hermanas-comparativos.html»"},
+{r:E,n:"A2",l:"A2",t:"voc",title:"¿Qué tiempo hace?",d:"El clima: vocabulario y frases, ficha interactiva.",p:"A2/el-clima-interactivo/",pr:"Vocabulario del clima y el tiempo atmosférico por paisajes: costa, montañas, desierto y ciudad",kb:322},
+{r:E,n:"A2",l:"A2",t:"cul",title:"El té — de los campos de China al mundo moderno",d:"Texto cultural sobre la historia del té, con preguntas.",p:"A2/el-te/",pr:"Comprensión, elegir y conjugar el tiempo verbal, detectar errores, traducir UA→ES y completar; con glosario",kb:28},
+{r:E,n:"A2",l:"A2",t:"gram",title:"Ponerse vs. Hacerse",d:"Verbos de cambio: diferencias de uso con ejercicios.",p:"A2/hacerse_o_ponerse/",pr:"Verbos de cambio: ponerse + adjetivo (temporal) vs. hacerse + sustantivo (permanente)",kb:311},
+{r:E,n:"A2",l:"A2",t:"gram",title:"Pretérito perfecto vs. imperfecto",d:"Contraste entre perfecto e imperfecto con práctica interactiva.",p:"A2/perfecto-imperfecto/",pr:"Pretérito perfecto (he hablado) vs. imperfecto (hablaba) con sus marcadores: hoy, este año / antes, siempre · 53 preguntas",kb:324},
+{r:E,n:"A2",l:"A2",t:"lec",title:"Cómo ha pasado mi viaje",d:"Texto y ejercicios para practicar el pretérito perfecto contando un viaje.",p:"A2/viaje-y-clima/",pr:"Pretérito indefinido e imperfecto al contar un viaje + vocabulario del clima · 31 preguntas",kb:314},
+
+/* ---------- estudiantes · B1 ---------- */
+{r:E,n:"B1",l:"B1",t:"lec",title:"Trabajo y vida personal — Cuestionario",d:"Cuestionario sobre el equilibrio entre trabajo y vida personal.",p:"B1/cuestionario-balance/",pr:"Conversación y opinión: expresar acuerdo/desacuerdo (escala 1–5) sobre trabajo y vida personal; para 1–3 estudiantes",kb:339},
+{r:E,n:"B1",l:"B1",t:"jue",title:"Nexus Solutions — Ficha de Elena",d:"Rol de Elena en un caso de empresa que cambia de rumbo (pareja con Marcos).",p:"B1/dos-trabajadores/elena/",pr:"Conversación en pareja con rol: presentarse, reaccionar, preguntar y estar de acuerdo/en desacuerdo ante un cambio en la empresa",kb:41,x:"Serie dos trabajadores"},
+{r:E,n:"B1",l:"B1",t:"jue",title:"Nexus Solutions — Ficha de Marcos",d:"Rol de Marcos en un caso de empresa que cambia de rumbo (pareja con Elena).",p:"B1/dos-trabajadores/marcos/",pr:"Conversación en pareja con rol: presentarse, reaccionar, preguntar y estar de acuerdo/en desacuerdo ante un cambio en la empresa",kb:41,x:"Serie dos trabajadores"},
+{r:E,n:"B1",l:"B1",t:"jue",title:"Director en prueba — Simulación de 13 semanas",d:"Simulación: diriges una empresa IT durante 13 semanas y tomas decisiones.",p:"B1/empresa-it/",pr:"Léxico de gestión y toma de decisiones (condicionales y consecuencias); simulación semana a semana",kb:26},
+{r:E,n:"B1",l:"B1",t:"lec",title:"Éxito: ¿talento o trabajo? — 3 textos",d:"Tres textos de opinión sobre si el éxito depende del talento o del esfuerzo.",p:"B1/exito-talento-trabajo/",pr:"Comprensión de 3 textos (Federer, McLaughlin…) · 14 preguntas. Tema: talento vs. esfuerzo",kb:316},
+{r:E,n:"B1",l:"B1",t:"lec",title:"Redes sociales — Ficha interactiva",d:"«¿Cuántos “me gusta” necesitas para ser feliz?» Lectura y ejercicios completos.",p:"B1/redes-sociales/",pr:"Lectura sobre redes sociales: opción múltiple, huecos, vocabulario, buscar en el texto y producción libre",kb:2008},
+{r:E,n:"B1",l:"B1",t:"lec",title:"Tendencias virales — Blanco A",d:"Versión para el alumno A de la actividad sobre redes sociales.",p:"B1/redes-a/",pr:"Actividad en pareja: leer tu texto, contárselo a tu compañero y unir frases; glosario con traducción UA. Tema: tendencias virales",kb:1159,x:"Serie redes"},
+{r:E,n:"B1",l:"B1",t:"lec",title:"Tendencias virales — Blanco B",d:"Versión para el alumno B de la actividad sobre redes sociales.",p:"B1/redes-b/",pr:"Actividad en pareja: leer tu texto, contárselo a tu compañero y unir frases; glosario con traducción UA. Tema: pérdida de identidad en tendencias",kb:1159,x:"Serie redes"},
+{r:E,n:"B1",l:"B1",t:"voc",title:"Vocabulario de negocios",d:"Léxico de negocios y empresa con ejercicios.",p:"B1/vocabulario-laboral/",pr:"Vocabulario de negocios (reorganizar, evitar, retraso, adoptar…): banco de palabras y texto · 38 preguntas",kb:326},
+{r:E,n:"B1",l:"B1",t:"voc",title:"Vocabulario laboral (versión simple)",d:"Vocabulario del trabajo en versión simplificada.",p:"B1/vocabulario_laboral_simple/",pr:"Vocabulario del trabajo: becario, currículum, experiencia profesional; unir palabra y definición · 47 preguntas",kb:320},
+
+/* ---------- estudiantes · B2 ---------- */
+{r:E,n:"B2",l:"B1–B2",t:"gram",title:"El imperfecto de subjuntivo",d:"Formas y usos del imperfecto de subjuntivo con práctica.",p:"B2/Imperfecto-de-subjuntivo/imperfecto_subjuntivo_B1.html",pr:"Imperfecto de subjuntivo: descubrir el patrón, formarlo y contar en pasado lo que otros dijeron o pidieron",kb:522,x:"Archivo con nombre propio (no es index.html)"},
+{r:E,n:"B2",l:"B2",t:"gram",title:"Condicionales — ¿Qué habrías hecho tú?",d:"Condicional compuesto y oraciones condicionales irreales.",p:"B2/condicionalesB2/",pr:"Condicionales tipo 1, 2, 3 y mixtos (si + presente / imperfecto de subj. / pluscuamperfecto de subj.) · 43 preguntas",kb:324},
+{r:E,n:"B2",l:"B2",t:"lec",title:"Cuatro caminos hacia el éxito",d:"Cuatro textos sobre poder y éxito para debatir.",p:"B2/cuatro-caminos-de-exito/",pr:"Comprensión de 4 textos: Maquiavelo, las 10.000 horas, estoicismo, Sun Tzu y bushido · 35 preguntas. Tema: poder y éxito",kb:336},
+{r:E,n:"B2",l:"B2",t:"lec",title:"Homeschooling: ¿futuro de la educación o utopía familiar?",d:"Lectura y ficha interactiva sobre la educación en casa.",p:"B2/homeschooling-interactivo/",pr:"Comprensión: V/F, opción múltiple, vocabulario y huecos. Tema: educación en casa",kb:2179,dup:"Copia idéntica en /homeschooling/"},
+{r:E,n:"B2",l:"B2",t:"lec",title:"El idioma que piensas cambia lo que ves",d:"Texto sobre lenguaje y percepción, con ejercicios.",p:"B2/idioma_que_piensas/",pr:"Lectura sobre Sapir-Whorf, complejidad lingüística y efecto Baader-Meinhof; 3 bloques de ejercicios",kb:329},
+{r:E,n:"B2",l:"B2",t:"lec",title:"Inteligencia emocional",d:"«La inteligencia que nadie te enseñó en la escuela». Lectura larga con actividades.",p:"B2/inteligencia-emocional/",pr:"Comprensión auditiva y lectora + reflexión. Tema: inteligencia emocional (Goleman)",kb:1801},
+{r:E,n:"B2",l:"B2",t:"gram",title:"Un mensaje inesperado — pretérito perfecto de subjuntivo",d:"Historia para practicar el pretérito perfecto de subjuntivo.",p:"B2/pretperfecto-subj/",pr:"Pretérito perfecto de subjuntivo vs. presente de subjuntivo (espero que llames / me alegra que hayas llamado). Tema: amigos y relaciones · 43 preguntas",kb:332},
+{r:E,n:"B2",l:"B2",t:"gram",title:"Cuatro tiempos — subjuntivo e indicativo",d:"Contraste presente/pretérito entre subjuntivo e indicativo.",p:"B2/subjindicativo-prestentepreterito/",pr:"Presente y pret. perfecto, de indicativo y de subjuntivo; ejercicios con cronómetro · 99 preguntas",kb:348},
+
+/* ---------- estudiantes · Libros ---------- */
+{r:E,n:"Libros",l:"B1",t:"lib",title:"El Alquimista — Partes 1–3",d:"Prólogo y prefacio de El Alquimista, versión interactiva.",p:"libros/alquimista/",pr:"Lectura de Paulo Coelho (prólogo y prefacio): vocabulario B1, comprensión y reflexión · 6 ejercicios",kb:2175},
+{r:E,n:"Libros",l:"A2",t:"lib",title:"La chica del tren (interactivo)",d:"Edición interactiva de La chica del tren.",p:"libros/chica_del_tren/",pr:"Lectura graduada A2: comprensión, vocabulario, traducción, pretérito perfecto y conversación · 4 capítulos",kb:1982},
+{r:E,n:"Libros",l:"B1",t:"lib",title:"Harry Potter — páginas 6–7",d:"Fragmento de Harry Potter, páginas 6 y 7, con actividades.",p:"libros/harrypotter/pagina6_7/",pr:"Comprensión, vocabulario, gramática y traducción UA de un fragmento (nivel B1)",kb:101,dup:"Copia idéntica en /harrypotter/"},
+{r:E,n:"Libros",l:"B1",t:"lib",title:"Harry Potter — páginas 6–7 (carpeta raíz)",d:"Mismo fragmento que el anterior, en la carpeta /harrypotter/.",p:"harrypotter/pagina6_7/",pr:"Comprensión, vocabulario, gramática y traducción UA de un fragmento (nivel B1)",kb:101,dup:"Duplicado de /libros/harrypotter/"},
+
+/* ---------- estudiantes · Otros ---------- */
+{r:E,n:"Otros",l:"Duplicado",t:"lec",title:"Homeschooling — Ficha interactiva (raíz)",d:"Misma ficha que B2/homeschooling-interactivo, guardada en /homeschooling/.",p:"homeschooling/",pr:"Comprensión: V/F, opción múltiple, vocabulario y huecos. Tema: educación en casa",kb:2179,dup:"Duplicado de B2/homeschooling-interactivo"},
+{r:E,n:"Personal",l:"RU",t:"otr",title:"Атлас векторов (Atlas de vectores)",d:"Atlas visual de vectores, en ruso. No es material de español.",p:"vector/",pr:"Notas y análisis de vectores (en ruso). Contenido personal, no es material de clase",kb:628},
+
+/* ---------- sitio (público) ---------- */
+{r:S,n:"A1",l:"A1",t:"gram",title:"¿Presente, gerundio o estar + gerundio?",d:"Contraste entre presente simple, gerundio y estar + gerundio.",p:"presente-gerundio-estar/",pr:"Presente simple vs. gerundio solo vs. estar + gerundio: elegir forma, corregir errores, unir frases",kb:457},
+{r:S,n:"A2",l:"A2–B1",t:"cul",title:"Arte y cultura — del arte rupestre al contemporáneo",d:"Recorrido por la historia del arte con lectura y ejercicios.",p:"arteycultura/",pr:"Lectura y vocabulario del arte (de la prehistoria a hoy): completar, V/F, línea del tiempo",kb:512},
+{r:S,n:"A2",l:"A2",t:"cul",title:"Los Andes, parte 2: la expedición",d:"Lectura sobre una expedición en los Andes, con audio (mp3).",p:"andesparte2/",pr:"Comprensión auditiva (audio) y lectora de la expedición, vocabulario de montaña y contar tu propia aventura",kb:3105,x:"Incluye audio ElevenLabs de 1,9 MB"},
+{r:S,n:"A2",l:"A2",t:"cul",title:"Cumbres más altas de los Andes",d:"Práctica libre sobre las montañas más altas de los Andes.",p:"cumbres-de-andes/",pr:"Geografía, naturaleza y clima: lectura con 6 ejercicios",kb:78},
+{r:S,n:"A2",l:"A2",t:"lec",title:"El barrio de Marcos — Ficha gratuita",d:"Ficha gratuita de descripción de un barrio.",p:"el-barrio-de-marcos/",pr:"Presente e imperfecto: describir un barrio (muestra gratuita · 28 preguntas)",kb:601},
+{r:S,n:"A2",l:"A2",t:"gram",title:"Entrenador — Imperativo",d:"Entrenador de imperativo con ejercicios repetibles.",p:"entrenador/imperativo/",pr:"Imperativo afirmativo y negativo: entrenar verbo × persona, con reglas en ucraniano",kb:254},
+{r:S,n:"A2",l:"A2",t:"gram",title:"Entrenador — Pretéritos (pasados)",d:"Entrenador de tiempos del pasado.",p:"entrenador/pasados/",pr:"Tiempos del pasado: entrenar tiempo × verbo × persona, con reglas en ucraniano",kb:261},
+{r:S,n:"Sin nivel",l:"—",t:"voc",title:"El árbol de la familia",d:"Vocabulario de la familia y relaciones. Nivel no indicado en el archivo.",p:"arbol-familiar/",pr:"Vocabulario de la familia: relaciones entre personas del árbol; modo estudio y modo práctica",kb:322},
+{r:S,n:"A2",l:"Test",t:"tes",title:"Test de nivel A2",d:"Test de colocación para el nivel A2 (en ucraniano).",p:"test/A2/",pr:"Test de colocación de nivel A2, con análisis detallado de respuestas (en ucraniano)",kb:2962},
+{r:S,n:"A1",l:"Test",t:"tes",title:"Test de nivel A1.1",d:"Test de colocación para el nivel A1.1 (en ucraniano).",p:"test/a11/",pr:"Test de colocación de nivel A1.1, con análisis detallado de respuestas (en ucraniano)",kb:511},
+{r:S,n:"A1",l:"Test",t:"tes",title:"Test de nivel A1.2",d:"Test de colocación para el nivel A1.2 (en ucraniano).",p:"test/a12/",pr:"Test de colocación de nivel A1.2, con análisis detallado de respuestas (en ucraniano)",kb:512},
+{r:S,n:"A1",l:"Test",t:"tes",title:"Test de nivel A1.3",d:"Test de colocación para el nivel A1.3 (en ucraniano).",p:"test/a13/",pr:"Test de colocación de nivel A1.3, con análisis detallado de respuestas (en ucraniano)",kb:512},
+{r:S,n:"B1",l:"Test",t:"tes",title:"Test de nivel B1",d:"Test de colocación para el nivel B1 (en ucraniano).",p:"test/b1/",pr:"Test de colocación de nivel B1, con análisis detallado de respuestas (en ucraniano)",kb:2648},
+{r:S,n:"B2",l:"Test",t:"tes",title:"Test de nivel B2",d:"Test de colocación para el nivel B2 (en ucraniano).",p:"test/b2/",pr:"Test de colocación de nivel B2, con análisis detallado de respuestas (en ucraniano)",kb:2815},
+{r:S,n:"Personal",l:"RU",t:"jue",title:"Звуки игры — Mario: Escaleras y Tuberías",d:"Juego de sonidos de Mario, versión en ruso.",p:"mario/",pr:"Efectos de sonido para el juego de mesa «Mario: Escaleras y Tuberías» (música, moneda, salto, game over…)",kb:1956},
+{r:S,n:"Personal",l:"EN",t:"jue",title:"Game Sounds — Mario: Escaleras y Tuberías",d:"Juego de sonidos de Mario, versión en inglés.",p:"mario_eng/",pr:"Efectos de sonido para el juego de mesa «Mario: Escaleras y Tuberías» (música, moneda, salto, game over…)",kb:1956},
+{r:S,n:"Personal",l:"RU",t:"dep",title:"Домашняя программа: гиря, баланс борд, скакалка",d:"Plan semanal de entrenamiento en casa: 15–20 min al día, por días, con técnica y nutrición (en ruso).",p:"trenirovki/",pr:"Entrenamiento en casa con kettlebell, balance board y comba: rutina por días, cuidado de rodillas y lumbar, progresión por semanas y nutrición",kb:57},
+{r:S,n:"Otros",l:"UA",t:"otr",title:"Записатися на урок — inscripción a una clase",d:"Página de reserva de clase de AMO (en ucraniano).",p:"sol/",pr:"Formulario para reservar una clase de AMO",kb:89}
+];
+
+/* ===== Lógica ===== */
+const $ = s => document.querySelector(s);
+const state = {repo:"all",tipo:"all",view:"nivel",q:""};
+const fmt = kb => kb>=1024 ? (kb/1024).toFixed(1).replace(".",",")+" MB" : kb+" KB";
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const url = it => (BASE[it.r]||"") + encodeURI(it.p.endsWith("/")?it.p+"index.html":it.p).replace(/\+/g,"%2B");
+const ghUrl = it => GH(it.r) + encodeURI(it.p).replace(/\+/g,"%2B");
+DATA.forEach(i=>i.hay=norm([i.title,i.d,i.pr,i.l,i.n,TIPOS[i.t].n,i.r,i.x||"",i.p].join(" ")));
+
+function chip(host,label,key,val,count){
+  const b=document.createElement("button");b.className="chip";b.type="button";
+  b.dataset.k=key;b.dataset.v=val;b.innerHTML=esc(label)+(count!=null?`<span class="n">${count}</span>`:"");
+  b.onclick=()=>{state[key]=val;render()};host.appendChild(b);
+}
+function buildControls(){
+  const cnt = f => DATA.filter(f).length;
+  const rr=$("#rowRepo");
+  chip(rr,"Todo","repo","all",DATA.length);
+  chip(rr,"estudiantes (aula)","repo",E,cnt(i=>i.r===E));
+  chip(rr,"sitio (público)","repo",S,cnt(i=>i.r===S));
+  const rt=$("#rowTipo");
+  chip(rt,"Todos","tipo","all");
+  Object.entries(TIPOS).forEach(([k,v])=>chip(rt,v.n,"tipo",k,cnt(i=>i.t===k)));
+  const rv=$("#rowView");
+  chip(rv,"Por nivel","view","nivel");
+  chip(rv,"Por tipo","view","tipo");
+  chip(rv,"Por almacén","view","repo");
+}
+function filtered(){
+  const toks=norm(state.q).split(/\s+/).filter(Boolean);
+  return DATA.filter(i=>(state.repo==="all"||i.r===state.repo)&&(state.tipo==="all"||i.t===state.tipo)&&toks.every(t=>i.hay.includes(t)));
+}
+function card(i){
+  const c=`var(${TIPOS[i.t].c})`;
+  const b=[`<span class="b tipo">${TIPOS[i.t].n}</span>`,`<span class="b">${esc(i.l)}</span>`,
+    i.r===S?`<span class="b pub">público</span>`:`<span class="b">estudiantes</span>`];
+  if(i.dup) b.push(`<span class="b warn" title="${esc(i.dup)}">duplicado</span>`);
+  if(i.x) b.push(`<span class="b" title="${esc(i.x)}">${esc(i.x)}</span>`);
+  return `<article class="card" style="--c:${c}">
+    <a class="main" href="${url(i)}" target="_blank" rel="noopener"><h3>${esc(i.title)}</h3></a>
+    <p class="pr"><b>Practica:</b> ${esc(i.pr)}</p>
+    <p>${esc(i.d)}</p>
+    <div class="badges">${b.join("")}</div>
+    <div class="foot"><span>${fmt(i.kb)}</span><a class="gh" href="${ghUrl(i)}" target="_blank" rel="noopener" title="Ver en GitHub">GitHub ↗</a></div>
+  </article>`;
+}
+function groups(items){
+  const m=new Map();
+  let keys,name,sub=()=>"";
+  if(state.view==="nivel"){keys=NIVELES;name=k=>NIVEL_NAME[k];sub=k=>"";}
+  else if(state.view==="tipo"){keys=Object.keys(TIPOS);name=k=>TIPOS[k].n;}
+  else {keys=[E,S];name=k=>k===E?"estudiantes — material de aula":"sitio — material público";}
+  keys.forEach(k=>m.set(k,[]));
+  items.forEach(i=>{const k=state.view==="nivel"?i.n:state.view==="tipo"?i.t:i.r;(m.get(k)||m.set(k,[]).get(k)).push(i)});
+  return [...m].filter(([,v])=>v.length).map(([k,v])=>({k,name:name(k),items:v}));
+}
+function render(){
+  document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String(state[b.dataset.k]===b.dataset.v)));
+  const items=filtered(), gs=groups(items);
+  const nE=items.filter(i=>i.r===E).length,nS=items.length-nE;
+  $("#stats").textContent=`${items.length} materiales — ${nE} en estudiantes, ${nS} en sitio (público)`;
+  $("#jump").innerHTML=gs.map(g=>`<a href="#g-${esc(g.k)}">${esc(g.name.replace(/^Nivel /,""))} · ${g.items.length}</a>`).join("");
+  $("#out").innerHTML=gs.length?gs.map(g=>{
+    const closed=closedSet.has(state.view+g.k)?" closed":"";
+    return `<section class="grp${closed}" id="g-${esc(g.k)}" data-key="${esc(state.view+g.k)}">
+      <h2><span class="arrow">▼</span>${esc(g.name)} <span class="cnt">${g.items.length}</span></h2>
+      <div class="grid">${g.items.map(card).join("")}</div></section>`}).join(""):`<div class="empty">No hay materiales que coincidan.</div>`;
+  document.querySelectorAll(".grp>h2").forEach(h=>h.onclick=()=>{
+    const s=h.parentElement,k=s.dataset.key;s.classList.toggle("closed");
+    s.classList.contains("closed")?closedSet.add(k):closedSet.delete(k);
+  });
+}
+const closedSet=new Set();
+buildControls();
+$("#q").addEventListener("input",e=>{state.q=e.target.value;render()});
+addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement!==$("#q")){e.preventDefault();$("#q").focus()}});
+render();
+</script>
+</body>
+</html>
