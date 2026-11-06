@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мой чек-лист недели</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: school notebook on grid paper. Week summary on top, one day open at a time, reflection + PDF at the bottom. */
+:root{
+  --paper:#f4f6fa;
+  --sheet:#ffffff;
+  --ink:#1c2332;
+  --muted:#5b6476;
+  --line:#dde3ee;
+  --accent:#2f55d4;
+  --accent-soft:#e8edfc;
+  --mark:#ffe36e;
+  --good:#1d8a4b;
+  --good-soft:#e3f4ea;
+  --font-display:"Unbounded","Manrope",system-ui,sans-serif;
+  --font-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11141b;--sheet:#191e28;--ink:#e6e9f1;--muted:#9aa3b6;--line:#2a3141;
+    --accent:#86a0ff;--accent-soft:#232c45;--mark:#6a5813;--good:#5fd08f;--good-soft:#1c3427;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11141b;--sheet:#191e28;--ink:#e6e9f1;--muted:#9aa3b6;--line:#2a3141;
+  --accent:#86a0ff;--accent-soft:#232c45;--mark:#6a5813;--good:#5fd08f;--good-soft:#1c3427;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;
+}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:1.45rem}
+h2{font-size:1.1rem}
+h3{font-size:.95rem;font-family:var(--font-body);font-weight:800}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:18px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.money{font-variant-numeric:tabular-nums;font-weight:800;background:linear-gradient(transparent 58%,var(--mark) 58%);padding:0 2px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;flex-direction:column;gap:10px}
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.status{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--good)}
+.weeknav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--sheet);border-radius:10px;padding:8px 12px;font-weight:700}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+:root[data-theme="dark"] .btn.primary{color:#0f1422}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0f1422}}
+.btn.icon{width:40px;padding:8px 0;text-align:center}
+.weeklabel{font-weight:800;min-width:150px;text-align:center}
+
+.summary{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.total{font-family:var(--font-display);font-size:2.2rem;font-variant-numeric:tabular-nums;line-height:1}
+.bar{height:12px;border-radius:6px;background:var(--accent-soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+.breakdown{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted);margin-top:8px}
+.breakdown b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.daytab{border:1px solid var(--line);background:var(--sheet);border-radius:10px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.8rem}
+.daytab b{font-size:.95rem}
+.daytab .sum{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+.daytab.today{border-color:var(--accent)}
+.daytab.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+.daytab.sel .sum{color:#fff}
+:root[data-theme="dark"] .daytab.sel,:root[data-theme="dark"] .daytab.sel .sum{color:#0f1422}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .daytab.sel,:root:not([data-theme="light"]) .daytab.sel .sum{color:#0f1422}}
+
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:12px;border-bottom:2px solid var(--line)}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+.row .label{display:flex;flex-direction:column}
+.row .label span{font-size:.8rem;color:var(--muted)}
+.check{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:10px;padding:6px 12px;background:transparent;font-weight:700;min-width:110px;justify-content:center}
+.check.on{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.stepper{display:inline-flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--sheet);font-weight:800;font-size:1.1rem}
+.stepper output{min-width:58px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.full{grid-column:1/-1}
+.grades{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:8px}
+.grades button{border:1px solid var(--line);background:var(--sheet);border-radius:8px;padding:6px 0;font-weight:800;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.grades{grid-template-columns:repeat(6,1fr)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 6px 4px 10px;font-size:.85rem;font-weight:700;background:var(--accent-soft)}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip button{border:0;background:transparent;width:22px;height:22px;border-radius:50%;font-weight:800;line-height:1}
+.inline{display:flex;gap:8px;margin-top:8px}
+input[type=text],input[type=number],input[type=time],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--paper)}
+textarea{min-height:76px;resize:vertical}
+.moods{display:flex;gap:6px;flex-wrap:wrap}
+.moods button{border:2px solid var(--line);background:var(--sheet);border-radius:10px;padding:4px 8px;font-size:1.3rem;display:flex;flex-direction:column;align-items:center;min-width:56px}
+.moods button span{font-size:.7rem;font-weight:700;color:var(--muted)}
+.moods button.on{border-color:var(--accent);background:var(--accent-soft)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:800;font-size:.9rem}
+.diary{display:flex;flex-direction:column;gap:14px;margin-top:14px;padding-top:14px;border-top:2px solid var(--line)}
+.note{font-size:.8rem;color:var(--muted)}
+
+details.settings summary{cursor:pointer;font-weight:800}
+.setgrid{display:grid;grid-template-columns:1fr 120px;gap:8px 12px;align-items:center;margin-top:12px}
+.setgrid label{font-size:.9rem}
+.rules{margin:8px 0 0;padding-left:18px;font-size:.9rem}
+.rules li{margin:2px 0}
+.pdfrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#pdfMsg{font-size:.85rem;color:var(--muted)}
+
+/* Offscreen report used for PDF */
+#report{position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#1c2332;font-family:var(--font-body)}
+#report .blk{padding:18px 24px;background:#fff}
+#report h1{font-size:22px;color:#1c2332}
+#report table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+#report th,#report td{border:1px solid #d5dbe7;padding:6px 6px;text-align:center;vertical-align:top}
+#report th{background:#eef2fb}
+#report td.l{text-align:left}
+#report .tot{font-size:28px;font-weight:800}
+#report .q{font-weight:800;font-size:13px;margin-top:8px}
+#report .a{font-size:13px;white-space:pre-wrap;border-left:3px solid #2f55d4;padding:2px 0 2px 10px;margin-top:2px}
+#report .dh{font-weight:800;font-size:15px;border-bottom:2px solid #dde3ee;padding-bottom:4px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="report" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ---------- constants & helpers ---------- */
+const DAY_SHORT=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+const DAY_LONG=["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
+const MONTHS=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const MOODS=[["😞","плохо"],["😕","так себе"],["😐","нормально"],["🙂","хорошо"],["😄","супер"]];
+const DEFAULTS={name:"",wakeTime:"8:30",lessonsDefault:6,pLesson:10,pHomework:20,pWake:10,gradeGood:10,pGradeGood:15,gradeOk:7,pGradeOk:5,pHelp:30,target:600};
+
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+function mondayOf(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);return x;}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function parseYmd(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
+function weekLabel(key){const a=parseYmd(key),b=addDays(a,6);
+  return a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${MONTHS[b.getMonth()]}`:`${a.getDate()} ${MONTHS[a.getMonth()]} – ${b.getDate()} ${MONTHS[b.getMonth()]}`;}
+const clone=o=>JSON.parse(JSON.stringify(o));
+const num=(v,d)=>{const n=Number(v);return isFinite(n)?n:d;};
+
+const LS={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+
+/* ---------- state ---------- */
+const S=Object.assign({},DEFAULTS);
+const todayKey=ymd(mondayOf(new Date()));
+let weekKey=todayKey;
+let selDay=(new Date().getDay()+6)%7;
+let W=loadLocalWeek(weekKey);
+let cloud="local"; // local | cloud | loading | error
+let db=null, downloads=null, unsubWeek=null;
+
+function emptyDay(i){return {woke:false,planned:i<5?num(S.lessonsDefault,6):0,attended:0,hw:false,grades:[],tidy:false,help:[],mood:0,interesting:"",thoughts:""};}
+function emptyWeek(){return {days:[0,1,2,3,4,5,6].map(emptyDay),proud:"",hard:"",updatedAt:0};}
+function normWeek(w){const e=emptyWeek();if(!w||!Array.isArray(w.days))return e;
+  e.days=e.days.map((d,i)=>Object.assign(d,w.days[i]||{}));
+  ["proud","hard"].forEach(k=>e[k]=w[k]||"");e.updatedAt=num(w.updatedAt,0);
+  e.days.forEach(d=>{if(!Array.isArray(d.grades))d.grades=[];if(!Array.isArray(d.help))d.help=[];});
+  return e;}
+function loadLocalWeek(k){return normWeek(LS.get("cl:week:"+k));}
+
+/* ---------- money ---------- */
+function gradeBonus(g){g=num(g.v,0);if(g>=S.gradeGood)return num(S.pGradeGood,0);if(g>=S.gradeOk)return num(S.pGradeOk,0);return 0;}
+function dayParts(d){
+  const school=d.planned>0;
+  return {
+    lessons:d.attended*num(S.pLesson,0),
+    hw:school&&d.hw?num(S.pHomework,0):0,
+    wake:school&&d.woke?num(S.pWake,0):0,
+    grades:d.grades.reduce((s,g)=>s+gradeBonus(g),0),
+    help:d.help.length*num(S.pHelp,0)
+  };}
+const sumParts=p=>p.lessons+p.hw+p.wake+p.grades+p.help;
+function weekParts(){const t={lessons:0,hw:0,wake:0,grades:0,help:0};W.days.forEach(d=>{const p=dayParts(d);for(const k in t)t[k]+=p[k];});return t;}
+function exampleWeek(){const L=num(S.lessonsDefault,6);return 5*L*S.pLesson+5*S.pHomework+5*S.pWake+4*S.pGradeGood+3*S.pHelp;}
+
+/* ---------- saving ---------- */
+let writeTimer=null, writing=false, writeAgain=false;
+function saveWeek(){
+  W.updatedAt=Date.now();
+  LS.set("cl:week:"+weekKey,W);
+  if(db){clearTimeout(writeTimer);writeTimer=setTimeout(flushWeek,700);}
+}
+async function flushWeek(){
+  if(!db)return;
+  if(writing){writeAgain=true;return;}
+  writing=true;
+  const key=weekKey, body=clone(W);
+  try{await db.doc("weeks/"+key).set(body);setCloud("cloud");}
+  catch(e){setCloud("error");}
+  writing=false;
+  if(writeAgain){writeAgain=false;flushWeek();}
+}
+/* ---------- cloud ---------- */
+function setCloud(s){cloud=s;const el=document.getElementById("status");if(el)el.innerHTML=statusHTML();}
+function statusHTML(){
+  if(cloud==="cloud")return '<i class="dot ok"></i>Сохранено в облаке';
+  if(cloud==="loading")return '<i class="dot"></i>Загружаю записи…';
+  if(cloud==="error")return '<i class="dot"></i>Облако недоступно, сохраняю на этом устройстве';
+  return '<i class="dot"></i>Сохранено на этом устройстве';
+}
+function subscribeWeek(){
+  if(!db)return;
+  if(unsubWeek)unsubWeek();
+  const key=weekKey;let pushed=false;
+  setCloud("loading");
+  const timer=setTimeout(()=>{if(cloud==="loading")setCloud("error");},10000);
+  unsubWeek=db.doc("weeks/"+key).onSnapshot(snap=>{
+    if(key!==weekKey)return;
+    if(snap.metadata.hasPendingWrites)return;
+    if(!snap.metadata.fromCache)clearTimeout(timer);
+    if(!snap.exists){
+      if(W.updatedAt&&!pushed){pushed=true;flushWeek();}
+      if(!snap.metadata.fromCache)setCloud("cloud");
+      return;
+    }
+    const remote=normWeek(snap.data());
+    if(remote.updatedAt>W.updatedAt){W=remote;LS.set("cl:week:"+key,W);render();}
+    else if(remote.updatedAt<W.updatedAt&&!pushed){pushed=true;flushWeek();}
+    if(!snap.metadata.fromCache)setCloud("cloud");
+  },()=>{clearTimeout(timer);setCloud("error");});
+}
+async function initCapabilities(){
+  const use=(window.claude&&typeof window.claude.use==="function")?window.claude.use.bind(window.claude):null;
+  if(!use){render();return;}
+  try{downloads=await use("downloads");}catch(e){downloads=null;}
+  try{db=await use("db");}catch(e){db=null;}
+  if(db)subscribeWeek();
+  render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  const app=document.getElementById("app");
+  const act=document.activeElement;const actId=act&&act.id;let s0=null,s1=null;
+  try{if(act&&"selectionStart" in act){s0=act.selectionStart;s1=act.selectionEnd;}}catch(e){}
+  app.innerHTML=headerHTML()+summaryHTML()+daysHTML()+dayHTML()+weekEndHTML()+settingsHTML();
+  if(actId){const el=document.getElementById(actId);if(el){el.focus();try{if(s0!=null)el.setSelectionRange(s0,s1);}catch(e){}}}
+}
+function headerHTML(){
+  const nm=S.name?esc(S.name)+", это":"Это";
+  return `<header class="top">
+    <div class="top-row">
+      <div><h1>Чек-лист недели</h1><div class="muted small">${nm} твоя неделя: отмечай каждый день, в воскресенье считаем вместе.</div></div>
+      <div class="status" id="status">${statusHTML()}</div>
+    </div>
+    <div class="weeknav">
+      <button class="btn icon" data-act="prevweek" aria-label="Предыдущая неделя">‹</button>
+      <div class="weeklabel">${weekLabel(weekKey)}</div>
+      <button class="btn icon" data-act="nextweek" aria-label="Следующая неделя">›</button>
+      ${weekKey!==todayKey?'<button class="btn" data-act="thisweek">К этой неделе</button>':""}
+    </div>
+  </header>`;
+}
+function summaryHTML(){
+  const p=weekParts(),t=sumParts(p),pct=Math.min(100,Math.round(t/Math.max(1,S.target)*100));
+  let att=0,pl=0;W.days.forEach(d=>{att+=d.attended;pl+=d.planned;});
+  return `<section class="sheet" aria-label="Итог недели">
+    <div class="summary">
+      <div><div class="muted small">Заработано за неделю</div><div class="total"><span class="money" id="wtotal">${t} ₴</span></div></div>
+      <div>
+        <div class="muted small" style="display:flex;justify-content:space-between"><span>Хорошая неделя ${S.target} ₴</span><span id="wpct">${pct}%</span></div>
+        <div class="bar"><i id="wbar" style="width:${pct}%"></i></div>
+        <div class="breakdown" id="wbreak">${breakHTML(p,att,pl)}</div>
+      </div>
+    </div>
+  </section>`;
+}
+function breakHTML(p,att,pl){
+  return `<span>Уроки <b>${att}/${pl}</b> · ${p.lessons} ₴</span><span>Домашка <b>${p.hw} ₴</b></span><span>Подъём <b>${p.wake} ₴</b></span><span>Оценки <b>${p.grades} ₴</b></span><span>Помощь <b>${p.help} ₴</b></span>`;
+}
+function daysHTML(){
+  const mon=parseYmd(weekKey),tk=ymd(new Date());
+  return `<nav class="days" aria-label="Дни недели">${W.days.map((d,i)=>{
+    const dt=addDays(mon,i);const cls=["daytab",i===selDay?"sel":"",ymd(dt)===tk?"today":""].join(" ");
+    return `<button class="${cls}" data-act="day" data-i="${i}" aria-pressed="${i===selDay}"><span>${DAY_SHORT[i]}</span><b>${dt.getDate()}</b><span class="sum">${sumParts(dayParts(d))}₴</span></button>`;
+  }).join("")}</nav>`;
+}
+function dayHTML(){
+  const d=W.days[selDay],i=selDay,dt=addDays(parseYmd(weekKey),i),p=dayParts(d),school=d.planned>0;
+  const chk=(field,on,txtOn,txtOff)=>`<button class="check ${on?"on":""}" data-act="toggle" data-f="${field}" aria-pressed="${on}">${on?"✓ "+txtOn:txtOff}</button>`;
+  const gradeBtns=Array.from({length:12},(_,k)=>`<button data-act="grade" data-v="${k+1}" aria-label="Оценка ${k+1}">${k+1}</button>`).join("");
+  const gradeChips=d.grades.map((g,k)=>`<span class="chip ${g.v>=S.gradeGood?"good":""}">${g.s?esc(g.s)+" ":""}${g.v}<button data-act="delgrade" data-k="${k}" aria-label="Убрать оценку">×</button></span>`).join("");
+  const helpChips=d.help.map((h,k)=>`<span class="chip good">${esc(h)}<button data-act="delhelp" data-k="${k}" aria-label="Убрать">×</button></span>`).join("");
+  return `<section class="sheet" aria-label="${DAY_LONG[i]}">
+    <div class="dayhead"><h2>${DAY_LONG[i]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}</h2><div>За день: <span class="money" id="dtotal">${sumParts(p)} ₴</span></div></div>
+    <div class="rows">
+      <div class="row"><div class="label"><b>Уроков по расписанию</b><span>${school?"поставь 0, если уроков нет":"выходной: уроков нет"}</span></div>
+        <div class="stepper"><button data-act="planned" data-d="-1" aria-label="Меньше">−</button><output>${d.planned}</output><button data-act="planned" data-d="1" aria-label="Больше">+</button></div></div>
+      ${school?`
+      <div class="row"><div class="label"><b>Была на уроках</b><span>${S.pLesson} ₴ за каждый урок</span></div>
+        <div class="stepper"><button data-act="attended" data-d="-1" aria-label="Меньше">−</button><output>${d.attended} / ${d.planned}</output><button data-act="attended" data-d="1" aria-label="Больше">+</button></div></div>
+      <div class="row"><div class="label"><b>Домашка сделана</b><span>${S.pHomework} ₴ за день</span></div>${chk("hw",d.hw,"сделала","Отметить")}</div>
+      <div class="row"><div class="label"><b>Встала до ${esc(S.wakeTime)}</b><span>${S.pWake} ₴ в учебный день</span></div>${chk("woke",d.woke,"встала","Отметить")}</div>
+      `:""}
+      <div class="row"><div class="label"><b>Убрала за собой</b><span>посуда, комната, вещи: это просто наш дом, без денег</span></div>${chk("tidy",d.tidy,"убрала","Отметить")}</div>
+      <div class="row"><div class="full label"><b>Оценки сегодня</b><span>${S.gradeGood}–12: +${S.pGradeGood} ₴ · ${S.gradeOk}–${S.gradeGood-1}: +${S.pGradeOk} ₴ · ниже: без штрафа, просто записываем</span>
+        <div class="inline"><input type="text" id="gsubj" placeholder="Предмет (необязательно)" maxlength="30" value="${esc(window.__gsubj||"")}"></div>
+        <div class="grades">${gradeBtns}</div>
+        ${gradeChips?`<div class="chips">${gradeChips}</div>`:""}
+      </div></div>
+      <div class="row"><div class="full label"><b>Помогла сама, без просьбы</b><span>+${S.pHelp} ₴ за каждое дело</span>
+        <form class="inline" data-form="help"><input type="text" id="helpin" placeholder="Например: разгрузила посудомойку" maxlength="80"><button class="btn" type="submit">Добавить</button></form>
+        ${helpChips?`<div class="chips">${helpChips}</div>`:""}
+      </div></div>
+    </div>
+    <div class="diary">
+      <div class="field"><label>Как я сегодня?</label>
+        <div class="moods">${MOODS.map((m,k)=>`<button data-act="mood" data-v="${k+1}" class="${d.mood===k+1?"on":""}" aria-pressed="${d.mood===k+1}">${m[0]}<span>${m[1]}</span></button>`).join("")}</div></div>
+      <div class="field"><label for="t-int">Что было интересного, что заметила</label><textarea id="t-int" data-f="interesting">${esc(d.interesting)}</textarea></div>
+      <div class="field"><label for="t-th">Мысли и ощущения</label><textarea id="t-th" data-f="thoughts">${esc(d.thoughts)}</textarea></div>
+      <div class="note">Эти записи видит и папа.</div>
+    </div>
+  </section>`;
+}
+function weekEndHTML(){
+  const pdfReady=!!downloads;
+  return `<section class="sheet" aria-label="Итоги недели">
+    <h2>Итоги недели</h2>
+    <div class="diary" style="border-top:0;margin-top:6px;padding-top:6px">
+      <div class="field"><label for="w-proud">Чем я горжусь на этой неделе</label><textarea id="w-proud" data-w="proud">${esc(W.proud)}</textarea></div>
+      <div class="field"><label for="w-hard">Что было трудно</label><textarea id="w-hard" data-w="hard">${esc(W.hard)}</textarea></div>
+      <div class="pdfrow">
+        <button class="btn primary" data-act="pdf" ${pdfReady?"":"disabled"}>Сохранить неделю в PDF</button>
+        <span id="pdfMsg">${pdfReady?"":"PDF работает, когда страница открыта по ссылке в Claude."}</span>
+      </div>
+    </div>
+  </section>`;
+}
+function settingsHTML(){
+  return `<section class="sheet"><h2>Как считаются деньги</h2>
+    <ul class="rules">
+      <li>Урок, на котором была: ${S.pLesson} ₴</li>
+      <li>Домашка за день: ${S.pHomework} ₴</li>
+      <li>Встала до ${esc(S.wakeTime)} в учебный день (уроки с 9:00): ${S.pWake} ₴</li>
+      <li>Оценка ${S.gradeGood}–12: +${S.pGradeGood} ₴, ${S.gradeOk}–${S.gradeGood-1}: +${S.pGradeOk} ₴, за низкие оценки штрафов нет</li>
+      <li>Помогла сама, без просьбы: ${S.pHelp} ₴ за каждое дело</li>
+      <li>Убрать за собой: обязательно, без денег</li>
+    </ul>
+    <p class="muted small">Хорошая неделя (все уроки и домашки, каждый учебный день встала вовремя, 4 хорошие оценки, 3 дела без просьбы) = <span class="money">${exampleWeek()} ₴</span></p>
+    <p class="muted small">Всё сохраняется само после каждой отметки. Прошлые недели открываются стрелками вверху. PDF нужен только тогда, когда хочешь сохранить неделю файлом.</p>
+  </section>`;
+}
+function updateTotals(){
+  const p=weekParts(),t=sumParts(p),pct=Math.min(100,Math.round(t/Math.max(1,S.target)*100));
+  let att=0,pl=0;W.days.forEach(d=>{att+=d.attended;pl+=d.planned;});
+  const q=id=>document.getElementById(id);
+  if(q("wtotal"))q("wtotal").textContent=t+" ₴";
+  if(q("wpct"))q("wpct").textContent=pct+"%";
+  if(q("wbar"))q("wbar").style.width=pct+"%";
+  if(q("wbreak"))q("wbreak").innerHTML=breakHTML(p,att,pl);
+}
+
+/* ---------- events ---------- */
+function switchWeek(k){
+  if(db&&writeTimer){clearTimeout(writeTimer);writeTimer=null;flushWeek();}
+  weekKey=k;W=loadLocalWeek(k);
+  selDay=k===todayKey?(new Date().getDay()+6)%7:0;
+  render();subscribeWeek();
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act,d=W.days[selDay];
+  switch(a){
+    case "prevweek":switchWeek(ymd(addDays(parseYmd(weekKey),-7)));return;
+    case "nextweek":switchWeek(ymd(addDays(parseYmd(weekKey),7)));return;
+    case "thisweek":switchWeek(todayKey);return;
+    case "day":selDay=Number(b.dataset.i);render();return;
+    case "toggle":d[b.dataset.f]=!d[b.dataset.f];break;
+    case "planned":d.planned=Math.max(0,Math.min(12,d.planned+Number(b.dataset.d)));d.attended=Math.min(d.attended,d.planned);break;
+    case "attended":d.attended=Math.max(0,Math.min(d.planned,d.attended+Number(b.dataset.d)));break;
+    case "grade":{const s=(document.getElementById("gsubj")||{}).value||"";d.grades.push({v:Number(b.dataset.v),s:s.trim()});window.__gsubj="";break;}
+    case "delgrade":d.grades.splice(Number(b.dataset.k),1);break;
+    case "delhelp":d.help.splice(Number(b.dataset.k),1);break;
+    case "mood":{const v=Number(b.dataset.v);d.mood=d.mood===v?0:v;break;}
+    case "pdf":makePdf(b);return;
+    default:return;
+  }
+  saveWeek();render();
+});
+document.addEventListener("submit",e=>{
+  const f=e.target.closest("[data-form=help]");if(!f)return;
+  e.preventDefault();
+  const inp=document.getElementById("helpin");const v=(inp.value||"").trim();if(!v)return;
+  W.days[selDay].help.push(v);saveWeek();render();
+  const n=document.getElementById("helpin");if(n)n.focus();
+});
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.id==="gsubj"){window.__gsubj=t.value;return;}
+  if(t.dataset.f){W.days[selDay][t.dataset.f]=t.value;saveWeek();return;}
+  if(t.dataset.w){W[t.dataset.w]=t.value;saveWeek();return;}
+});
+
+/* ---------- PDF ---------- */
+function moodTxt(m){return m?MOODS[m-1][0]+" "+MOODS[m-1][1]:"—";}
+function reportBlocks(){
+  const mon=parseYmd(weekKey),p=weekParts(),t=sumParts(p);
+  let att=0,pl=0;W.days.forEach(d=>{att+=d.attended;pl+=d.planned;});
+  const rows=W.days.map((d,i)=>{const dt=addDays(mon,i),school=d.planned>0;
+    return `<tr><td class="l"><b>${DAY_SHORT[i]}</b> ${dt.getDate()}.${pad(dt.getMonth()+1)}</td>
+      <td>${school?(d.woke?"✓":"—"):"·"}</td><td>${school?d.attended+"/"+d.planned:"·"}</td><td>${school?(d.hw?"✓":"—"):"·"}</td>
+      <td>${d.grades.map(g=>esc((g.s?g.s+" ":"")+g.v)).join(", ")||"—"}</td><td>${d.help.length||"—"}</td><td>${d.tidy?"✓":"—"}</td>
+      <td>${d.mood?MOODS[d.mood-1][0]:"—"}</td><td><b>${sumParts(dayParts(d))}</b></td></tr>`;}).join("");
+  const blocks=[];
+  blocks.push(`<div class="blk"><h1>Чек-лист недели: ${weekLabel(weekKey)} ${mon.getFullYear()}${S.name?" · "+esc(S.name):""}</h1>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px">
+      <div><div style="font-size:12px;color:#5b6476">Заработано</div><div class="tot">${t} ₴</div></div>
+      <div style="font-size:12.5px;color:#5b6476;text-align:right">Уроки ${att}/${pl} · ${p.lessons} ₴ &nbsp; Домашка ${p.hw} ₴ &nbsp; Подъём ${p.wake} ₴<br>Оценки ${p.grades} ₴ &nbsp; Помощь ${p.help} ₴ &nbsp; Цель ${S.target} ₴</div>
+    </div>
+    <table><thead><tr><th>День</th><th>Встала до ${esc(S.wakeTime)}</th><th>Уроки</th><th>Домашка</th><th>Оценки</th><th>Помощь</th><th>Убрала</th><th>Настроение</th><th>₴</th></tr></thead><tbody>${rows}</tbody></table></div>`);
+  W.days.forEach((d,i)=>{
+    if(!d.interesting&&!d.thoughts&&!d.help.length&&!d.mood)return;
+    const dt=addDays(mon,i);
+    blocks.push(`<div class="blk"><div class="dh">${DAY_LONG[i]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]} · ${moodTxt(d.mood)}</div>
+      ${d.help.length?`<div class="q">Помогла сама</div><div class="a">${d.help.map(esc).join("\n")}</div>`:""}
+      ${d.interesting?`<div class="q">Что было интересного</div><div class="a">${esc(d.interesting)}</div>`:""}
+      ${d.thoughts?`<div class="q">Мысли и ощущения</div><div class="a">${esc(d.thoughts)}</div>`:""}</div>`);
+  });
+  if(W.proud||W.hard){
+    blocks.push(`<div class="blk"><div class="dh">Итоги недели</div>
+      ${W.proud?`<div class="q">Чем горжусь</div><div class="a">${esc(W.proud)}</div>`:""}
+      ${W.hard?`<div class="q">Что было трудно</div><div class="a">${esc(W.hard)}</div>`:""}</div>`);
+  }
+  return blocks;
+}
+async function makePdf(btn){
+  const msg=document.getElementById("pdfMsg");
+  const say=t=>{if(msg)msg.textContent=t;};
+  if(!downloads){say("PDF работает, когда страница открыта по ссылке в Claude.");return;}
+  if(!window.html2canvas||!window.jspdf){say("Не загрузились инструменты для PDF. Проверь интернет и обнови страницу.");return;}
+  btn.disabled=true;say("Собираю PDF…");
+  try{
+    try{await document.fonts.ready;}catch(e){}
+    const rep=document.getElementById("report");
+    const pdf=new window.jspdf.jsPDF({unit:"pt",format:"a4"});
+    const PW=pdf.internal.pageSize.getWidth(),PH=pdf.internal.pageSize.getHeight(),M=28,IW=PW-2*M;
+    let y=M;
+    for(const html of reportBlocks()){
+      rep.innerHTML=html;
+      const cv=await window.html2canvas(rep.firstElementChild,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      const ratio=IW/cv.width;let srcY=0;
+      while(srcY<cv.height){
+        const room=PH-M-y;
+        let sliceH=Math.min(cv.height-srcY,Math.floor(room/ratio));
+        if(sliceH<60&&y>M){pdf.addPage();y=M;continue;}
+        if(srcY===0&&cv.height*ratio>room&&cv.height*ratio<=PH-2*M&&y>M){pdf.addPage();y=M;continue;}
+        const part=document.createElement("canvas");part.width=cv.width;part.height=sliceH;
+        part.getContext("2d").drawImage(cv,0,srcY,cv.width,sliceH,0,0,cv.width,sliceH);
+        pdf.addImage(part.toDataURL("image/jpeg",0.92),"JPEG",M,y,IW,sliceH*ratio);
+        y+=sliceH*ratio+8;srcY+=sliceH;
+        if(srcY<cv.height){pdf.addPage();y=M;}
+      }
+    }
+    rep.innerHTML="";
+    const blob=pdf.output("blob");
+    await downloads.save({filename:"nedelya-"+weekKey+".pdf",data:blob});
+    say("Готово: PDF сохранён.");
+  }catch(e){
+    const c=e&&e.code;
+    if(c==="declined")say("Сохранение отменено.");
+    else if(c==="rate_limited")say("Окно сохранения уже открыто, подожди немного.");
+    else say("Не получилось сохранить PDF. Попробуй ещё раз.");
+  }finally{btn.disabled=false;}
+}
+
+/* ---------- start ---------- */
+render();
+initCapabilities();
+})();
+</script>
+</body>
+</html>
