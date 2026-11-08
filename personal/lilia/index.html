@@ -153,18 +153,54 @@ details.tt summary{cursor:pointer}
 .ttday li span:last-child{display:flex;flex-direction:column}
 .ttday .ln{font-weight:800;color:var(--muted)}
 .ttday .lt{color:var(--muted);font-variant-numeric:tabular-nums}
-/* Offscreen report used for PDF */
-#report{position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#1c2332;font-family:var(--font-body)}
+.dot.warn{background:#d9482b}
+/* ---------- weekly report (screen + PDF) ---------- */
+.rv{display:flex;flex-direction:column;gap:14px}
+.rv .blk{display:flex;flex-direction:column;gap:12px}
+.rv-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.rv-k{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:800}
+.rv-h{font-family:var(--font-display);font-size:1.15rem;font-weight:700;line-height:1.25}
+.rv-tot{text-align:right}
+.rv-tot b{display:block;font-family:var(--font-display);font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.rv-tot span{font-size:.8rem;color:var(--muted)}
+.rv-sum{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.rv-sum b{color:var(--ink)}
+.rv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.rv-grid{grid-template-columns:1fr}}
+.rv-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--sheet)}
+.rv-card h4{margin:0 0 10px;font-size:.85rem;font-weight:800;font-family:var(--font-body)}
+.rv-mood,.rv-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.rv-mcol,.rv-bcol{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.rv-mcol em,.rv-bcol em{font-style:normal;font-size:.72rem;color:var(--muted);font-weight:700}
+.rv-mtrack{position:relative;width:100%;height:110px;border-radius:8px;background:repeating-linear-gradient(to top,var(--accent-soft) 0 1px,transparent 1px 27px)}
+.rv-mdot{position:absolute;left:50%;transform:translateX(-50%);font-size:1.4rem;line-height:1}
+.rv-btrack{width:100%;height:110px;display:flex;align-items:flex-end;justify-content:center}
+.rv-btrack i{display:block;width:70%;background:var(--accent);border-radius:6px 6px 0 0;min-height:2px}
+.rv-bv{font-size:.7rem;font-weight:800;font-variant-numeric:tabular-nums}
+.rv-hab{display:grid;grid-template-columns:128px repeat(7,1fr);gap:4px;align-items:center;font-size:.8rem}
+.rv-hab .hh{color:var(--muted);text-align:center;font-weight:800;font-size:.72rem;line-height:1.2}
+.rv-hab .hl{font-weight:700}
+.rv-hab .c{height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;background:var(--accent-soft);color:var(--muted)}
+.rv-hab .c.on{background:var(--good-soft);color:var(--good)}
+.rv-hab .c.na{background:transparent}
+@media (max-width:480px){.rv-hab{grid-template-columns:84px repeat(7,1fr);font-size:.72rem}}
+.rv-lrow{display:grid;grid-template-columns:28px 1fr 46px;gap:8px;align-items:center;font-size:.82rem;margin:5px 0}
+.rv-lrow .bar{height:10px}
+.rv-lrow span{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.rv-note{border-left:4px solid var(--accent);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:2px}
+.rv-note .dh{font-weight:800}
+.rv-note .q{font-weight:800;font-size:.85rem;margin-top:6px}
+.rv-note .a{white-space:pre-wrap;font-size:.92rem}
+.rv-empty{color:var(--muted);font-size:.85rem}
+.bk{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.bk label.btn{display:inline-block}
+.bk input[type=file]{display:none}
+/* Offscreen report used for PDF: always light, fixed width */
+#report{position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#1c2332;font-family:var(--font-body);
+  --paper:#f4f6fa;--sheet:#ffffff;--ink:#1c2332;--muted:#5b6476;--line:#dde3ee;--accent:#2f55d4;--accent-soft:#e8edfc;--mark:#ffe36e;--good:#1d8a4b;--good-soft:#e3f4ea}
 #report .blk{padding:18px 24px;background:#fff}
-#report h1{font-size:22px;color:#1c2332}
-#report table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
-#report th,#report td{border:1px solid #d5dbe7;padding:6px 6px;text-align:center;vertical-align:top}
-#report th{background:#eef2fb}
-#report td.l{text-align:left}
-#report .tot{font-size:28px;font-weight:800}
-#report .q{font-weight:800;font-size:13px;margin-top:8px}
-#report .a{font-size:13px;white-space:pre-wrap;border-left:3px solid #2f55d4;padding:2px 0 2px 10px;margin-top:2px}
-#report .dh{font-weight:800;font-size:15px;border-bottom:2px solid #dde3ee;padding-bottom:4px}
+#report .rv-grid{grid-template-columns:1fr 1fr}
+#report .rv-hab{grid-template-columns:128px repeat(7,1fr);font-size:.8rem}
 </style>
 </head>
 <body>
@@ -205,8 +241,9 @@ function weekLabel(key){const a=parseYmd(key),b=addDays(a,6);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const num=(v,d)=>{const n=Number(v);return isFinite(n)?n:d;};
 
+let storageOK=true, persisted=false;
 const LS={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
-          set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){storageOK=false;return false;}}};
 
 /* ---------- theme (auto / light / dark) ---------- */
 const THEMES=["auto","light","dark"];
@@ -221,8 +258,6 @@ const todayKey=ymd(mondayOf(new Date()));
 let weekKey=todayKey;
 let selDay=(new Date().getDay()+6)%7;
 let W=loadLocalWeek(weekKey);
-let cloud="local"; // local | cloud | loading | error
-let db=null, downloads=null, unsubWeek=null;
 
 function emptyDay(i){return {off:false,att:[],woke:false,planned:0,attended:0,hw:false,grades:[],tidy:false,help:[],mood:0,interesting:"",thoughts:""};}
 function emptyWeek(){const days=[0,1,2,3,4,5,6].map(emptyDay);days.forEach((d,i)=>derive(d,i));return {days,proud:"",hard:"",updatedAt:0};}
@@ -249,59 +284,62 @@ const sumParts=p=>p.lessons+p.hw+p.wake+p.grades+p.help;
 function weekParts(){const t={lessons:0,hw:0,wake:0,grades:0,help:0};W.days.forEach(d=>{const p=dayParts(d);for(const k in t)t[k]+=p[k];});return t;}
 function exampleWeek(){const L=SCHED.reduce((a,x)=>a+x.filter(l=>l[0]>0).length,0);return L*S.pLesson+5*S.pHomework+5*S.pWake+4*S.pGradeGood+3*S.pHelp;}
 
-/* ---------- saving ---------- */
-let writeTimer=null, writing=false, writeAgain=false;
+/* ---------- saving (en el navegador de este устройства) ---------- */
 function saveWeek(){
   W.updatedAt=Date.now();
-  LS.set("cl:week:"+weekKey,W);
-  if(db){clearTimeout(writeTimer);writeTimer=setTimeout(flushWeek,700);}
+  if(!LS.set("cl:week:"+weekKey,W))setStatus();
 }
-async function flushWeek(){
-  if(!db)return;
-  if(writing){writeAgain=true;return;}
-  writing=true;
-  const key=weekKey, body=clone(W);
-  try{await db.doc("weeks/"+key).set(body);setCloud("cloud");}
-  catch(e){setCloud("error");}
-  writing=false;
-  if(writeAgain){writeAgain=false;flushWeek();}
-}
-/* ---------- cloud ---------- */
-function setCloud(s){cloud=s;const el=document.getElementById("status");if(el)el.innerHTML=statusHTML();}
+function setStatus(){const el=document.getElementById("status");if(el)el.innerHTML=statusHTML();}
 function statusHTML(){
-  if(cloud==="cloud")return '<i class="dot ok"></i>Сохранено в облаке';
-  if(cloud==="loading")return '<i class="dot"></i>Загружаю записи…';
-  if(cloud==="error")return '<i class="dot"></i>Облако недоступно, сохраняю на этом устройстве';
-  return '<i class="dot"></i>Сохранено на этом устройстве';
+  if(!storageOK)return '<i class="dot warn"></i>Память браузера недоступна: записи не сохранятся. Не открывай страницу в режиме инкогнито';
+  if(persisted)return '<i class="dot ok"></i>Сохранено на этом устройстве (защищено от очистки)';
+  return '<i class="dot ok"></i>Сохранено на этом устройстве';
 }
-function subscribeWeek(){
-  if(!db)return;
-  if(unsubWeek)unsubWeek();
-  const key=weekKey;let pushed=false;
-  setCloud("loading");
-  const timer=setTimeout(()=>{if(cloud==="loading")setCloud("error");},10000);
-  unsubWeek=db.doc("weeks/"+key).onSnapshot(snap=>{
-    if(key!==weekKey)return;
-    if(snap.metadata.hasPendingWrites)return;
-    if(!snap.metadata.fromCache)clearTimeout(timer);
-    if(!snap.exists){
-      if(W.updatedAt&&!pushed){pushed=true;flushWeek();}
-      if(!snap.metadata.fromCache)setCloud("cloud");
-      return;
+async function initStorage(){
+  try{localStorage.setItem("cl:t","1");localStorage.removeItem("cl:t");storageOK=true;}catch(e){storageOK=false;}
+  try{
+    if(navigator.storage&&navigator.storage.persisted){
+      persisted=await navigator.storage.persisted();
+      if(!persisted&&navigator.storage.persist)persisted=await navigator.storage.persist();
     }
-    const remote=normWeek(snap.data());
-    if(remote.updatedAt>W.updatedAt){W=remote;LS.set("cl:week:"+key,W);render();}
-    else if(remote.updatedAt<W.updatedAt&&!pushed){pushed=true;flushWeek();}
-    if(!snap.metadata.fromCache)setCloud("cloud");
-  },()=>{clearTimeout(timer);setCloud("error");});
+  }catch(e){}
+  setStatus();
 }
-async function initCapabilities(){
-  const use=(window.claude&&typeof window.claude.use==="function")?window.claude.use.bind(window.claude):null;
-  if(!use){render();return;}
-  try{downloads=await use("downloads");}catch(e){downloads=null;}
-  try{db=await use("db");}catch(e){db=null;}
-  if(db)subscribeWeek();
-  render();
+/* копия записей в файл и загрузка обратно */
+let bkMsg="";
+function saveBlob(blob,name){
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=name;a.style.display="none";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},4000);
+}
+function exportData(){
+  const weeks={};
+  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k&&k.indexOf("cl:week:")===0){const v=LS.get(k);if(v)weeks[k.slice(8)]=v;}}}catch(e){}
+  const n=Object.keys(weeks).length;
+  if(!n){bkMsg="Пока нечего сохранять: записей ещё нет.";render();return;}
+  const blob=new Blob([JSON.stringify({app:"checklist-nedeli",version:1,exported:new Date().toISOString(),weeks},null,1)],{type:"application/json"});
+  saveBlob(blob,"zapisi-"+ymd(new Date())+".json");
+  bkMsg="Копия сохранена в загрузки (недель: "+n+"). Положи файл в надёжное место.";render();
+}
+function importData(file){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);let n=0,total=0;
+      if(!data||data.app!=="checklist-nedeli"||typeof data.weeks!=="object")throw new Error("format");
+      for(const k in data.weeks){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(k))continue;total++;
+        const inc=normWeek(data.weeks[k]),cur=LS.get("cl:week:"+k);
+        if(!cur||num(cur.updatedAt,0)<=inc.updatedAt){if(LS.set("cl:week:"+k,inc))n++;}
+      }
+      W=loadLocalWeek(weekKey);
+      bkMsg="Загружено недель: "+n+" из "+total+".";
+    }catch(e){bkMsg="Не получилось прочитать файл. Нужен файл, сохранённый кнопкой «Сохранить копию».";}
+    render();
+  };
+  r.onerror=()=>{bkMsg="Не получилось открыть файл.";render();};
+  r.readAsText(file);
 }
 
 /* ---------- render ---------- */
@@ -382,7 +420,7 @@ function dayHTML(){
         <div class="moods">${MOODS.map((m,k)=>`<button data-act="mood" data-v="${k+1}" class="${d.mood===k+1?"on":""}" aria-pressed="${d.mood===k+1}">${m[0]}<span>${m[1]}</span></button>`).join("")}</div></div>
       <div class="field"><label for="t-int">Что было интересного, что заметила</label><textarea id="t-int" data-f="interesting">${esc(d.interesting)}</textarea></div>
       <div class="field"><label for="t-th">Мысли и ощущения</label><textarea id="t-th" data-f="thoughts">${esc(d.thoughts)}</textarea></div>
-      <div class="note">Эти записи видит и папа.</div>
+      <div class="note">Эти записи можно показать папе: в конце недели сохрани неделю в PDF.</div>
     </div>
   </section>`;
 }
@@ -407,16 +445,29 @@ function timetableHTML(){
   </details></section>`;
 }
 function weekEndHTML(){
-  const pdfReady=!!downloads;
   return `<section class="sheet" aria-label="Итоги недели">
     <h2>Итоги недели</h2>
     <div class="diary" style="border-top:0;margin-top:6px;padding-top:6px">
       <div class="field"><label for="w-proud">Чем я горжусь на этой неделе</label><textarea id="w-proud" data-w="proud">${esc(W.proud)}</textarea></div>
       <div class="field"><label for="w-hard">Что было трудно</label><textarea id="w-hard" data-w="hard">${esc(W.hard)}</textarea></div>
-      <div class="pdfrow">
-        <button class="btn primary" data-act="pdf" ${pdfReady?"":"disabled"}>Сохранить неделю в PDF</button>
-        <span id="pdfMsg">${pdfReady?"":"PDF работает, когда страница открыта по ссылке в Claude."}</span>
-      </div>
+    </div>
+  </section>
+  <section class="sheet" aria-label="Как прошла неделя">
+    <h2>Как прошла неделя</h2>
+    <p class="muted small" style="margin:6px 0 12px">Картинка недели собирается сама из твоих отметок и записей.</p>
+    <div class="rv" id="rv">${reportBlocks().join("")}</div>
+    <div class="pdfrow" style="margin-top:14px">
+      <button class="btn primary" data-act="pdf">Сохранить неделю в PDF</button>
+      <span id="pdfMsg"></span>
+    </div>
+  </section>
+  <section class="sheet" aria-label="Мои записи">
+    <h2>Мои записи</h2>
+    <p class="muted small" style="margin:6px 0 0">Всё, что ты отмечаешь и пишешь, хранится в этом браузере на этом устройстве и сохраняется после каждого нажатия. Чтобы ничего не потерять, не очищай данные сайтов и раз в неделю сохраняй копию: её можно загрузить обратно, даже на другом устройстве.</p>
+    <div class="bk">
+      <button class="btn" data-act="export">Сохранить копию</button>
+      <label class="btn">Загрузить копию<input type="file" id="bkfile" accept="application/json,.json"></label>
+      <span id="bkMsg" class="small muted">${esc(bkMsg)}</span>
     </div>
   </section>`;
 }
@@ -446,10 +497,9 @@ function updateTotals(){
 
 /* ---------- events ---------- */
 function switchWeek(k){
-  if(db&&writeTimer){clearTimeout(writeTimer);writeTimer=null;flushWeek();}
   weekKey=k;W=loadLocalWeek(k);
   selDay=k===todayKey?(new Date().getDay()+6)%7:0;
-  render();subscribeWeek();
+  render();
 }
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
@@ -467,6 +517,7 @@ document.addEventListener("click",e=>{
     case "mood":{const v=Number(b.dataset.v);d.mood=d.mood===v?0:v;break;}
     case "theme":theme=THEMES[(THEMES.indexOf(theme)+1)%3];LS.set("cl:theme",theme);applyTheme();render();return;
     case "pdf":makePdf(b);return;
+    case "export":exportData();return;
     default:return;
   }
   derive(d,selDay);saveWeek();render();
@@ -483,46 +534,68 @@ document.addEventListener("submit",e=>{
 document.addEventListener("input",e=>{
   const t=e.target;
   if(t.id==="gsubj"){window.__gsubj=t.value;return;}
-  if(t.dataset.f){W.days[selDay][t.dataset.f]=t.value;saveWeek();return;}
-  if(t.dataset.w){W[t.dataset.w]=t.value;saveWeek();return;}
+  if(t.dataset.f){W.days[selDay][t.dataset.f]=t.value;saveWeek();refreshRv();return;}
+  if(t.dataset.w){W[t.dataset.w]=t.value;saveWeek();refreshRv();return;}
 });
+document.addEventListener("change",e=>{
+  const t=e.target;if(t&&t.id==="bkfile"&&t.files&&t.files[0])importData(t.files[0]);
+});
+function refreshRv(){const el=document.getElementById("rv");if(el)el.innerHTML=reportBlocks().join("");}
 
-/* ---------- PDF ---------- */
-function moodTxt(m){return m?MOODS[m-1][0]+" "+MOODS[m-1][1]:"—";}
+/* ---------- weekly report: screen + PDF ---------- */
 function reportBlocks(){
-  const mon=parseYmd(weekKey),p=weekParts(),t=sumParts(p);
+  const mon=parseYmd(weekKey),p=weekParts(),t=sumParts(p),pct=Math.min(100,Math.round(t/Math.max(1,S.target)*100));
   let att=0,pl=0;W.days.forEach(d=>{att+=d.attended;pl+=d.planned;});
-  const rows=W.days.map((d,i)=>{const dt=addDays(mon,i),school=d.planned>0;
-    return `<tr><td class="l"><b>${DAY_SHORT[i]}</b> ${dt.getDate()}.${pad(dt.getMonth()+1)}</td>
-      <td>${school?(d.woke?"✓":"—"):"·"}</td><td>${school?d.attended+"/"+d.planned:"·"}</td><td>${school?(d.hw?"✓":"—"):"·"}</td>
-      <td>${d.grades.map(g=>esc((g.s?g.s+" ":"")+g.v)).join(", ")||"—"}</td><td>${d.help.length||"—"}</td><td>${d.tidy?"✓":"—"}</td>
-      <td>${d.mood?MOODS[d.mood-1][0]:"—"}</td><td><b>${sumParts(dayParts(d))}</b></td></tr>`;}).join("");
+  const ds=W.days.map((d,i)=>({d,i,s:DAY_SHORT[i],dt:addDays(mon,i),earn:sumParts(dayParts(d))}));
+  const maxE=Math.max(50,...ds.map(x=>x.earn));
+  const withMood=ds.filter(x=>x.d.mood);
+  const avgM=withMood.length?Math.round(withMood.reduce((a,x)=>a+x.d.mood,0)/withMood.length):0;
+  const best=ds.reduce((a,x)=>x.earn>a.earn?x:a,ds[0]);
+  const mood=`<div class="rv-mood">${ds.map(x=>`<div class="rv-mcol"><div class="rv-mtrack">${x.d.mood?`<span class="rv-mdot" style="bottom:${((x.d.mood-1)/4*78).toFixed(1)}%">${MOODS[x.d.mood-1][0]}</span>`:""}</div><em>${x.s}</em></div>`).join("")}</div>`;
+  const bars=`<div class="rv-bars">${ds.map(x=>`<div class="rv-bcol"><span class="rv-bv">${x.earn}</span><div class="rv-btrack"><i style="height:${(x.earn/maxE*100).toFixed(1)}%"></i></div><em>${x.s}</em></div>`).join("")}</div>`;
+  const row=(label,fn,showN)=>`<div class="hl">${label}</div>`+ds.map(x=>{const r=fn(x.d);
+    return `<div class="c ${r>0?"on":r===0?"":"na"}">${r>0?(showN?r:"✓"):r===0?"—":"·"}</div>`;}).join("");
+  const hab=`<div class="rv-hab"><div></div>${ds.map(x=>`<div class="hh">${x.s}<br>${x.dt.getDate()}</div>`).join("")}
+    ${row("Встала вовремя",d=>d.planned>0?(d.woke?1:0):-1)}${row("Домашка",d=>d.planned>0?(d.hw?1:0):-1)}
+    ${row("Убрала за собой",d=>d.tidy?1:0)}${row("Помогла сама",d=>d.help.length,true)}</div>`;
+  const lrows=ds.filter(x=>x.d.planned>0).map(x=>`<div class="rv-lrow"><em style="font-style:normal;font-weight:800;color:var(--muted)">${x.s}</em><div class="bar"><i style="width:${(x.d.attended/x.d.planned*100).toFixed(0)}%"></i></div><span>${x.d.attended}/${x.d.planned}</span></div>`).join("");
+  const grades=[];ds.forEach(x=>x.d.grades.forEach(g=>grades.push({v:num(g.v,0),s:g.s,day:x.s})));
+  const avgG=grades.length?(grades.reduce((a,g)=>a+g.v,0)/grades.length):0;
+  const gradeChips=grades.map(g=>`<span class="chip ${g.v>=S.gradeGood?"good":""}" style="padding:4px 10px">${esc(g.day)}${g.s?" · "+esc(g.s):""}: ${g.v}</span>`).join("");
+  const helps=[];ds.forEach(x=>x.d.help.forEach(h=>helps.push({h,day:x.s})));
   const blocks=[];
-  blocks.push(`<div class="blk"><h1>Чек-лист недели: ${weekLabel(weekKey)} ${mon.getFullYear()}${S.name?" · "+esc(S.name):""}</h1>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px">
-      <div><div style="font-size:12px;color:#5b6476">Заработано</div><div class="tot">${t} ₴</div></div>
-      <div style="font-size:12.5px;color:#5b6476;text-align:right">Уроки ${att}/${pl} · ${p.lessons} ₴ &nbsp; Домашка ${p.hw} ₴ &nbsp; Подъём ${p.wake} ₴<br>Оценки ${p.grades} ₴ &nbsp; Помощь ${p.help} ₴ &nbsp; Цель ${S.target} ₴</div>
+  blocks.push(`<div class="blk">
+    <div class="rv-top"><div><div class="rv-k">Чек-лист недели</div><div class="rv-h">${weekLabel(weekKey)} ${mon.getFullYear()}${S.name?" · "+esc(S.name):""}</div></div>
+      <div class="rv-tot"><b>${t} ₴</b><span>${pct}% от цели ${S.target} ₴</span></div></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="rv-sum"><span>Уроки <b>${att}/${pl}</b></span>${best.earn>0?`<span>Лучший день <b>${best.s}, ${best.earn} ₴</b></span>`:""}<span>Среднее настроение <b>${avgM?MOODS[avgM-1][0]+" "+MOODS[avgM-1][1]:"—"}</b></span>${grades.length?`<span>Средняя оценка <b>${avgG.toFixed(1).replace(".",",")}</b></span>`:""}</div>
+    <div class="rv-grid">
+      <section class="rv-card"><h4>Настроение по дням</h4>${mood}</section>
+      <section class="rv-card"><h4>Заработано по дням, ₴</h4>${bars}</section>
     </div>
-    <table><thead><tr><th>День</th><th>Встала до ${esc(S.wakeTime)}</th><th>Уроки</th><th>Домашка</th><th>Оценки</th><th>Помощь</th><th>Убрала</th><th>Настроение</th><th>₴</th></tr></thead><tbody>${rows}</tbody></table></div>`);
-  W.days.forEach((d,i)=>{
-    if(!d.interesting&&!d.thoughts&&!d.help.length&&!d.mood)return;
-    const dt=addDays(mon,i);
-    blocks.push(`<div class="blk"><div class="dh">${DAY_LONG[i]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]} · ${moodTxt(d.mood)}</div>
-      ${d.help.length?`<div class="q">Помогла сама</div><div class="a">${d.help.map(esc).join("\n")}</div>`:""}
+    <section class="rv-card"><h4>Привычки недели</h4>${hab}</section>
+    <div class="rv-grid">
+      <section class="rv-card"><h4>Уроки, на которых была</h4>${lrows||'<div class="rv-empty">В эту неделю уроков нет.</div>'}</section>
+      <section class="rv-card"><h4>Оценки</h4>${gradeChips?`<div class="chips" style="margin-top:0">${gradeChips}</div>`:'<div class="rv-empty">Оценок пока нет.</div>'}</section>
+    </div>
+    <section class="rv-card"><h4>Помогла сама, без просьбы</h4>${helps.length?`<div class="chips" style="margin-top:0">${helps.map(x=>`<span class="chip good" style="padding:4px 10px">${x.day}: ${esc(x.h)}</span>`).join("")}</div>`:'<div class="rv-empty">Пока ничего не записано.</div>'}</section>
+  </div>`);
+  ds.forEach(x=>{
+    const d=x.d;if(!d.interesting&&!d.thoughts)return;
+    blocks.push(`<div class="blk"><div class="rv-note"><div class="dh">${DAY_LONG[x.i]}, ${x.dt.getDate()} ${MONTHS[x.dt.getMonth()]} ${d.mood?MOODS[d.mood-1][0]+" "+MOODS[d.mood-1][1]:""}</div>
       ${d.interesting?`<div class="q">Что было интересного</div><div class="a">${esc(d.interesting)}</div>`:""}
-      ${d.thoughts?`<div class="q">Мысли и ощущения</div><div class="a">${esc(d.thoughts)}</div>`:""}</div>`);
+      ${d.thoughts?`<div class="q">Мысли и ощущения</div><div class="a">${esc(d.thoughts)}</div>`:""}</div></div>`);
   });
   if(W.proud||W.hard){
-    blocks.push(`<div class="blk"><div class="dh">Итоги недели</div>
-      ${W.proud?`<div class="q">Чем горжусь</div><div class="a">${esc(W.proud)}</div>`:""}
-      ${W.hard?`<div class="q">Что было трудно</div><div class="a">${esc(W.hard)}</div>`:""}</div>`);
+    blocks.push(`<div class="blk"><div class="rv-note"><div class="dh">Итоги недели</div>
+      ${W.proud?`<div class="q">Чем я горжусь</div><div class="a">${esc(W.proud)}</div>`:""}
+      ${W.hard?`<div class="q">Что было трудно</div><div class="a">${esc(W.hard)}</div>`:""}</div></div>`);
   }
   return blocks;
 }
 async function makePdf(btn){
   const msg=document.getElementById("pdfMsg");
   const say=t=>{if(msg)msg.textContent=t;};
-  if(!downloads){say("PDF работает, когда страница открыта по ссылке в Claude.");return;}
   if(!window.html2canvas||!window.jspdf){say("Не загрузились инструменты для PDF. Проверь интернет и обнови страницу.");return;}
   btn.disabled=true;say("Собираю PDF…");
   try{
@@ -548,20 +621,16 @@ async function makePdf(btn){
       }
     }
     rep.innerHTML="";
-    const blob=pdf.output("blob");
-    await downloads.save({filename:"nedelya-"+weekKey+".pdf",data:blob});
-    say("Готово: PDF сохранён.");
+    saveBlob(pdf.output("blob"),"nedelya-"+weekKey+".pdf");
+    say("Готово: PDF сохранён в загрузки.");
   }catch(e){
-    const c=e&&e.code;
-    if(c==="declined")say("Сохранение отменено.");
-    else if(c==="rate_limited")say("Окно сохранения уже открыто, подожди немного.");
-    else say("Не получилось сохранить PDF. Попробуй ещё раз.");
+    say("Не получилось сохранить PDF. Попробуй ещё раз.");
   }finally{btn.disabled=false;}
 }
 
 /* ---------- start ---------- */
 render();
-initCapabilities();
+initStorage();
 })();
 </script>
 </body>
