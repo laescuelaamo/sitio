@@ -59,7 +59,32 @@ document.body.appendChild(root);document.body.appendChild(pill);
 var $=function(id){return document.getElementById(id);};
 var bar=$("tmBar"),timeEl=$("tmTime"),goBtn=$("tmGo"),sndBtn=$("tmSnd");
 
-/* ---------- звук ---------- */
+/* ---------- звук ----------
+   Основной путь: обычный <audio> со сгенерированным WAV. Он играет даже при выключенном
+   звонке на iPhone и «разблокируется» нажатием «Старт». Запасной путь: Web Audio. */
+function makeWav(parts,total){
+  var sr=22050,n=Math.ceil(total*sr),buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+  function w(o,t){for(var i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));}
+  w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVEfmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);
+  var data=new Float32Array(n);
+  parts.forEach(function(p){
+    var s0=Math.floor(p[1]*sr),len=Math.floor(p[2]*sr);
+    for(var i=0;i<len&&s0+i<n;i++){
+      var t=i/sr,env=Math.min(1,t/0.012)*Math.exp(-3.2*t/p[2]);
+      data[s0+i]+=Math.sin(2*Math.PI*p[0]*t)*env*(p[3]||0.6);
+    }
+  });
+  for(var j=0;j<n;j++){var x=Math.max(-1,Math.min(1,data[j]));v.setInt16(44+j*2,x*32767,true);}
+  return URL.createObjectURL(new Blob([buf],{type:"audio/wav"}));
+}
+var URLS={
+  start:makeWav([[880,0,0.14,0.55]],0.2),
+  tick:makeWav([[660,0,0.1,0.5]],0.15),
+  done:makeWav([[988,0,0.22,0.7],[988,0.3,0.22,0.7],[988,0.6,0.22,0.7],[1318,0.95,0.6,0.7]],1.7),
+  test:makeWav([[880,0,0.16,0.6]],0.22)
+};
+var snd=new Audio();snd.preload="auto";snd.setAttribute("playsinline","");
 function ac(){
   try{
     if(!actx){var A=window.AudioContext||window.webkitAudioContext;if(A)actx=new A();}
@@ -76,8 +101,22 @@ function beep(freq,t0,d,vol){
     o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+0.05);
   }catch(e){}
 }
-function doneSound(){if(mute)return;beep(988,0,0.22,0.6);beep(988,0.3,0.22,0.6);beep(988,0.6,0.22,0.6);beep(1318,0.95,0.6,0.6);}
-function tickSound(){if(!mute)beep(660,0,0.09,0.3);}
+var FALLBACK={
+  start:function(){beep(880,0,0.14,0.5);},
+  test:function(){beep(880,0,0.16,0.5);},
+  tick:function(){beep(660,0,0.09,0.3);},
+  done:function(){beep(988,0,0.22,0.6);beep(988,0.3,0.22,0.6);beep(988,0.6,0.22,0.6);beep(1318,0.95,0.6,0.6);}
+};
+function play(name){
+  if(mute)return;
+  try{
+    snd.src=URLS[name];
+    var pr=snd.play();
+    if(pr&&pr.catch)pr.catch(function(){FALLBACK[name]();});
+  }catch(e){FALLBACK[name]();}
+}
+function doneSound(){play("done");}
+function tickSound(){play("tick");}
 function buzz(){try{if(navigator.vibrate)navigator.vibrate([250,120,250,120,500]);}catch(e){}}
 
 /* ---------- не гасить экран во время отсчёта ---------- */
@@ -117,7 +156,7 @@ function update(){
 }
 function start(){
   if(state==="done"||left<=0)left=dur*1000;
-  ac();
+  ac();play("start");
   state="run";endAt=Date.now()+left;lastSec=null;
   clearTimers();
   loop=setInterval(update,100);
@@ -151,7 +190,7 @@ function pick(s){
 goBtn.addEventListener("click",function(){if(state==="run")stop();else start();});
 $("tmReset").addEventListener("click",reset);
 $("tmChips").addEventListener("click",function(e){var b=e.target.closest(".tm-chip");if(b)pick(+b.dataset.s);});
-sndBtn.addEventListener("click",function(){mute=!mute;LS.set("mute",mute);if(!mute){ac();beep(880,0,0.15,0.4);}render();});
+sndBtn.addEventListener("click",function(){mute=!mute;LS.set("mute",mute);if(!mute){ac();play("test");}render();});
 $("tmMin").addEventListener("click",function(){mini=true;LS.set("mini",true);render();});
 pill.addEventListener("click",function(){mini=false;LS.set("mini",false);render();});
 document.addEventListener("visibilitychange",function(){
