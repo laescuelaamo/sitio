@@ -535,7 +535,7 @@ function renderDay(){
     </div>
     <div class="exgrid">${cards}</div>`;
   document.querySelectorAll('#panel svg[data-ex]').forEach(s=>mount(s,s.dataset.ex));
-  document.getElementById('donebtn').onclick=()=>{done[cur]=!done[cur];store.set('wk-done',done);renderWeek();renderDay();};
+  document.getElementById('donebtn').onclick=()=>{done[cur]=!done[cur];store.set('wk-done',done);if(cur===today&&window.Streak)Streak.set(Streak.todayKey(),!!done[cur]);renderWeek();renderDay();};
 }
 function select(i,scroll){cur=i;store.set('wk-day',i);renderWeek();renderDay();if(scroll)document.getElementById('days').scrollIntoView({behavior:'smooth'});}
 document.addEventListener('click',e=>{
@@ -562,5 +562,9 @@ function calc(){const kg=+document.getElementById('kg').value||0;
 document.getElementById('kg').addEventListener('input',calc); calc();
 </script>
 <script src="../timer.js"></script>
+<script src="../streak.js"></script>
+<script>
+Streak.init({person:"anton",mount:"main.wrap",afterMark:function(k,val){done[today]=val;store.set("wk-done",done);renderWeek();renderDay();}});
+</script>
 </body>
 </html>
