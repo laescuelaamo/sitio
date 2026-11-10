@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#f6f5f1;--surface:#fff;--ink:#1d1d1b;--muted:#6b6a65;--line:#e4e2da;--accent:#c2410c;--accent-soft:#fff1e8;
-  --gram:#2563eb;--voc:#7c3aed;--lec:#0d9488;--cul:#b45309;--jue:#db2777;--tes:#4d7c0f;--lib:#9333ea;--dep:#0891b2;--otr:#64748b;
+  --gram:#2563eb;--voc:#7c3aed;--lec:#0d9488;--cul:#b45309;--jue:#db2777;--tes:#4d7c0f;--lib:#9333ea;--ind:#0f766e;--dep:#0891b2;--otr:#64748b;
   --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05);
 }
 @media (prefers-color-scheme:dark){
@@ -107,10 +107,10 @@ const GH = r => `https://github.com/laescuelaamo/${r}/tree/main/`;
 const TIPOS = {
   gram:{n:"Gramática",c:"--gram"}, voc:{n:"Vocabulario",c:"--voc"}, lec:{n:"Lectura / ficha",c:"--lec"},
   cul:{n:"Cultura",c:"--cul"}, jue:{n:"Juego / simulación",c:"--jue"}, tes:{n:"Test de nivel",c:"--tes"},
-  lib:{n:"Libro",c:"--lib"}, dep:{n:"Deporte",c:"--dep"}, otr:{n:"Otro",c:"--otr"}
+  lib:{n:"Libro",c:"--lib"}, ind:{n:"Individual",c:"--ind"}, dep:{n:"Deporte",c:"--dep"}, otr:{n:"Otro",c:"--otr"}
 };
-const NIVELES = ["A1","A2","B1","B2","Libros","Sin nivel","Otros","Personal"];
-const NIVEL_NAME = {A1:"Nivel A1",A2:"Nivel A2",B1:"Nivel B1",B2:"Nivel B2",Libros:"Libros y lecturas graduadas","Sin nivel":"Sin nivel definido",Otros:"Otros materiales",Personal:"Personal (solo para mí)"};
+const NIVELES = ["A1","A2","B1","B2","Libros","Individuales","Sin nivel","Otros","Personal"];
+const NIVEL_NAME = {A1:"Nivel A1",A2:"Nivel A2",B1:"Nivel B1",B2:"Nivel B2",Libros:"Libros y lecturas graduadas",Individuales:"Prácticas individuales","Sin nivel":"Sin nivel definido",Otros:"Otros materiales",Personal:"Personal (solo para mí)"};
 
 /* pr: qué se practica (gramática, tema, tiempo) · r: repo (e=estudiantes, s=sitio) · n: nivel (grupo) · l: etiqueta de nivel · t: tipo · title · d: descripción · p: ruta · kb: tamaño · x: nota */
 const E="estudiantes", S="sitio";
@@ -162,6 +162,9 @@ const DATA = [
 {r:E,n:"Libros",l:"A2",t:"lib",title:"La chica del tren (interactivo)",d:"Edición interactiva de La chica del tren.",p:"libros/chica_del_tren/",pr:"Lectura graduada A2: comprensión, vocabulario, traducción, pretérito perfecto y conversación · 4 capítulos",kb:1982},
 {r:E,n:"Libros",l:"B1",t:"lib",title:"Harry Potter — páginas 6–7",d:"Fragmento de Harry Potter, páginas 6 y 7, con actividades.",p:"libros/harrypotter/pagina6_7/",pr:"Comprensión, vocabulario, gramática y traducción UA de un fragmento (nivel B1)",kb:101,dup:"Copia idéntica en /harrypotter/"},
 {r:E,n:"Libros",l:"B1",t:"lib",title:"Harry Potter — páginas 6–7 (carpeta raíz)",d:"Mismo fragmento que el anterior, en la carpeta /harrypotter/.",p:"harrypotter/pagina6_7/",pr:"Comprensión, vocabulario, gramática y traducción UA de un fragmento (nivel B1)",kb:101,dup:"Duplicado de /libros/harrypotter/"},
+
+/* ---------- estudiantes · Individuales ---------- */
+{r:E,n:"Individuales",l:"individual",t:"ind",title:"Práctica individual — Julia G.",d:"Material individual de una alumna: lección 1 (10 nov) y próxima en preparación. Con informe en PDF al final (español y ucraniano).",p:"individuales/practica-individual-julia-g/",pr:"Lección 1: vídeo sobre el café, vocabulario y tarjetas, comprensión (V/F, orden cronológico) y condicionales (conjugar, construir, unir, traducir). 13 ejercicios",kb:280},
 
 /* ---------- estudiantes · Otros ---------- */
 {r:E,n:"Otros",l:"Duplicado",t:"lec",title:"Homeschooling — Ficha interactiva (raíz)",d:"Misma ficha que B2/homeschooling-interactivo, guardada en /homeschooling/.",p:"homeschooling/",pr:"Comprensión: V/F, opción múltiple, vocabulario y huecos. Tema: educación en casa",kb:2179,dup:"Duplicado de B2/homeschooling-interactivo"},
