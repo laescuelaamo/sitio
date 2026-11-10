@@ -915,7 +915,13 @@ function renderFood(){
   };
   $("#foodNow").innerHTML=`<b>Сегодня в фокусе · ${PH[ph].n}</b>${T[ph]}`;
 }
-function renderAll(){renderBanner();renderStrip();renderPanel();renderSettings();renderFood();}
+function syncStreakRest(){
+  if(!(window.Streak&&Streak.setRest))return;
+  const list=[],base=new Date();base.setHours(12,0,0,0);
+  for(let i=-90;i<=30;i++){const d=add(base,i);if(plan(d).type==="rest")list.push(fd(d));}
+  Streak.setRest(list);
+}
+function renderAll(){renderBanner();renderStrip();renderPanel();renderSettings();renderFood();syncStreakRest();}
 
 /* ================= события ================= */
 document.addEventListener("click",e=>{
@@ -928,7 +934,7 @@ document.addEventListener("click",e=>{
   if(t.id==="wk-prev"){sel=fd(add(pd(sel),-7));renderStrip();renderPanel();return;}
   if(t.id==="wk-next"){sel=fd(add(pd(sel),7));renderStrip();renderPanel();return;}
   if(t.id==="wk-now"){sel=fd(new Date());renderStrip();renderPanel();return;}
-  if(t.id==="b-done"){done[sel]=!done[sel];if(!done[sel])delete done[sel];store.set("done",done);renderStrip();renderPanel();return;}
+  if(t.id==="b-done"){done[sel]=!done[sel];if(!done[sel])delete done[sel];store.set("done",done);if(window.Streak)Streak.set(sel,!!done[sel]);renderStrip();renderPanel();return;}
   if(t.dataset.ci){const c=ci[sel]=ci[sel]||{};c[t.dataset.ci]=!c[t.dataset.ci];
     if(t.dataset.ci==="easy"&&c.easy)c.strong=false;if(t.dataset.ci==="strong"&&c.strong)c.easy=false;
     if(!Object.values(c).some(Boolean))delete ci[sel];store.set("ci",ci);renderStrip();renderPanel();return;}
@@ -939,7 +945,7 @@ document.addEventListener("click",e=>{
 function readCfg(){
   const v=(id,lo,hi,d)=>{const n=parseInt($(id).value,10);return isFinite(n)?Math.min(hi,Math.max(lo,n)):d;};
   cfg.start=$("#f-start").value||"";cfg.L=v("#f-L",21,40,28);cfg.P=v("#f-P",2,8,5);cfg.R=v("#f-R",0,6,3);
-  store.set("cfg",cfg);renderBanner();renderStrip();renderPanel();renderFood();
+  store.set("cfg",cfg);renderBanner();renderStrip();renderPanel();renderFood();syncStreakRest();
   {const L=effL();$("#cycleInfo").textContent=allStarts().length?`Длина цикла сейчас: ${L} дн.${fromLog?" (по твоим отметкам)":""}`:"";}
 }
 ["#f-start","#f-L","#f-P","#f-R"].forEach(id=>$(id).addEventListener("change",readCfg));
@@ -947,7 +953,7 @@ document.querySelectorAll("[data-eq]").forEach(i=>i.addEventListener("change",()
 
 /* копия записей */
 function exportData(){
-  const blob=new Blob([JSON.stringify({app:"dasha-plan",version:1,exported:new Date().toISOString(),cfg,starts,done,ci},null,1)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({app:"dasha-plan",version:1,exported:new Date().toISOString(),cfg,starts,done,ci,streak:(window.Streak?Streak.exportData():null)},null,1)],{type:"application/json"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="dasha-zapisi-"+fd(new Date())+".json";a.style.display="none";document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},4000);
   $("#bkMsg").textContent="Копия сохранена в загрузки.";
@@ -963,6 +969,7 @@ $("#b-import").addEventListener("change",e=>{
       if(d.done&&typeof d.done==="object")done=Object.assign(done,d.done);
       if(d.ci&&typeof d.ci==="object")ci=Object.assign(ci,d.ci);
       store.set("cfg",cfg);store.set("starts",starts);store.set("done",done);store.set("ci",ci);
+      if(d.streak&&window.Streak)Streak.importData(d.streak);
       renderAll();$("#bkMsg").textContent="Копия загружена.";
     }catch(err){$("#bkMsg").textContent="Не получилось прочитать файл. Нужен файл, сохранённый кнопкой «Сохранить копию».";}
   };
@@ -1014,5 +1021,10 @@ renderLegend();renderAll();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 </script>
 <script src="../timer.js"></script>
+<script src="../streak.js"></script>
+<script>
+Streak.init({person:"dasha",mount:"#banner",mountMode:"after",afterMark:function(k,val){if(val)done[k]=true;else delete done[k];store.set("done",done);renderStrip();renderPanel();}});
+syncStreakRest();
+</script>
 </body>
 </html>

@@ -22,6 +22,7 @@ a.card:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .nm{font-size:30px;font-weight:850}
 .tx{opacity:.92;font-size:16px}
 .go{margin-top:auto;font-weight:800}
+.sk{align-self:flex-start;background:rgba(255,255,255,.22);padding:5px 13px;border-radius:999px;font-weight:800;font-size:15px}
 </style>
 </head>
 <body>
@@ -31,13 +32,16 @@ a.card:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <a class="card a" href="anton/">
     <span class="em">🏋️</span><span class="nm">Антон</span>
     <span class="tx">Гиря, баланс борд, скакалка. Тренировки по дням, питание и калькулятор.</span>
+    <span class="sk" data-streak="anton"></span>
     <span class="go">Открыть →</span>
   </a>
   <a class="card d" href="dasha/">
     <span class="em">🌸</span><span class="nm">Даша</span>
     <span class="tx">Мягкая программа, которая подстраивается под самочувствие. Резинки, гиря, баланс борд, питание.</span>
+    <span class="sk" data-streak="dasha"></span>
     <span class="go">Открыть →</span>
   </a>
 </div>
+<script src="streak.js"></script>
 </body>
 </html>
